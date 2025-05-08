@@ -17,10 +17,7 @@ load_dotenv()
 GOOGLE_KEY = os.getenv("GEMINI_API_KEY")
 
 
-TMP_DIR = "/tmp/manim_renders"
 
-
-os.makedirs(TMP_DIR,exist_ok=True)
 os.makedirs("jobs",exist_ok=True)
 
 app = FastAPI()
@@ -76,28 +73,36 @@ def write_code_to_file(code : str,job_dir :str) -> str:
 
 def render_with_manim(script_path : str,output_path : str):
     script_dir = os.path.dirname(script_path)
-    script_filename = os.path.basename(script_path)
-    output_filename = os.path.basename(output_path)
+    script_filename = os.path.basename(script_path) # this stores the full path of the file
+    output_filename = os.path.basename(output_path) # this contains the path to the rendered video
     cmd = [
         "manim",
         script_filename,
         "AnimationScene",
         "-qm",
-        "--media_dir",script_dir,
+
         "-o", output_filename
     ]
     subprocess.run(cmd, cwd=script_dir, check=True)
 
 @app.post("/generate")
 async def generate(prompt_req: PromptRequest, background_tasks: BackgroundTasks):
-    job_id = prompt_req.job_id or str(uuid.uuid4())
-    job_dir = os.path.join("jobs", job_id)
+    job_id = prompt_req.job_id or str(uuid.uuid4()) # first genrate daddsalkdas23123 id
+
+    job_dir = os.path.join("jobs", job_id) # after generating id it stores the path /jobs/daddsalkdas23123
+
     os.makedirs(job_dir, exist_ok=True)
 
     # Determine step number
     step_index = len(jobs.get(job_id, {}).get("steps", []))
-    script_path = os.path.join(job_dir, f"step_{step_index}.py")
-    video_path = os.path.join(job_dir, f"step_{step_index}.mp4")
+    step_dir = os.path.join(job_dir, "steps")
+    os.makedirs(step_dir, exist_ok=True)
+
+    script_path = os.path.join(step_dir, f"step_{step_index}.py")
+    video_path = os.path.join(step_dir, f"step_{step_index}.mp4")
+
+
+
 
     if job_id not in jobs:
         jobs[job_id] = {"status": "processing", "steps": []}
@@ -109,7 +114,8 @@ async def generate(prompt_req: PromptRequest, background_tasks: BackgroundTasks)
             # Optionally: use previous code to inform the next generation
             prev_code = None
             if step_index > 0:
-                prev_script = os.path.join(job_dir, f"step_{step_index - 1}.py")
+                prev_script = os.path.join(job_dir, "steps", f"step_{step_index - 1}.py")
+
                 with open(prev_script) as f:
                     prev_code = f.read()
 
