@@ -1,6 +1,7 @@
 
 from fastapi import FastAPI,HTTPException,WebSocket,BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.params import Depends
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from google import genai
@@ -9,6 +10,11 @@ import os
 import subprocess
 import uuid
 import uvicorn
+from typing import Optional
+from models import Job,Step,SessionLocal
+from sqlalchemy.orm import Session
+from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
+from imagekitio import ImageKit
 
 
 load_dotenv()
@@ -20,7 +26,16 @@ GOOGLE_KEY = os.getenv("GEMINI_API_KEY")
 
 os.makedirs("jobs",exist_ok=True)
 
+
+image = ImageKit(
+    public_key=os.getenv("IMAGE_KIT_PUBLIC_KEY"),
+    private_key=os.getenv("IMAGE_KIT_PRIVATE_KEY"),
+    url_endpoint=os.getenv("IMAGE_KIT_URL")
+)
+
 app = FastAPI()
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Specify your frontend origin in production
@@ -30,10 +45,21 @@ app.add_middleware(
 )
 
 class PromptRequest(BaseModel):
-    job_id : str | None = None
+    job_id: Optional[str] = None
     prompt : str
 
 jobs = {}
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+
 
 
 
@@ -64,12 +90,19 @@ Ensure proper imports and no extra explanation—only the code.
 
     return "\n".join(cleaned_lines)
 
+
+
 def write_code_to_file(code : str,job_dir :str) -> str:
     os.makedirs(job_dir, exist_ok=True)
     file_path = os.path.join(job_dir,"animation.py")
     with open(file_path,"w") as f:
         f.write(code)
     return file_path
+
+
+
+
+
 
 def render_with_manim(script_path : str,output_path : str):
     script_dir = os.path.dirname(script_path)
@@ -85,41 +118,41 @@ def render_with_manim(script_path : str,output_path : str):
     ]
     subprocess.run(cmd, cwd=script_dir, check=True)
 
+
+
+
+
+
 @app.post("/generate")
-async def generate(prompt_req: PromptRequest, background_tasks: BackgroundTasks):
-    job_id = prompt_req.job_id or str(uuid.uuid4()) # first genrate daddsalkdas23123 id
+async def generate(prompt_req: PromptRequest, background_tasks: BackgroundTasks, db : Session = Depends(get_db)):
 
-    job_dir = os.path.join("jobs", job_id) # after generating id it stores the path /jobs/daddsalkdas23123
+    job_id = prompt_req.job_id if prompt_req.job_id is not None else str(uuid.uuid4())
 
-    os.makedirs(job_dir, exist_ok=True)
+    job = db.query(Job).filter_by(id=job_id).first()
 
-    # Determine step number
-    step_index = len(jobs.get(job_id, {}).get("steps", []))
-    step_dir = os.path.join(job_dir, "steps")
+    if not job:
+       job = Job(id=job_id,status="processing")
+       db.add(job)
+       db.commit()
+
+
+    step_index = db.query(Step).filter_by(job_id=job_id).count()
+    step_dir = os.path.join("jobs", job_id, "steps")
     os.makedirs(step_dir, exist_ok=True)
 
     script_path = os.path.join(step_dir, f"step_{step_index}.py")
     video_path = os.path.join(step_dir, f"step_{step_index}.mp4")
-
-
-
-
-    if job_id not in jobs:
-        jobs[job_id] = {"status": "processing", "steps": []}
-
-    jobs[job_id]["status"] = "processing"
+    video_url = f"/videos/{job_id}/steps/step_{step_index}.mp4"
 
     async def process_job():
+        db_bg = SessionLocal()
         try:
-            # Optionally: use previous code to inform the next generation
             prev_code = None
             if step_index > 0:
-                prev_script = os.path.join(job_dir, "steps", f"step_{step_index - 1}.py")
-
+                prev_script = os.path.join(step_dir, f"step_{step_index - 1}.py")
                 with open(prev_script) as f:
                     prev_code = f.read()
 
-            # You could pass prev_code into Gemini via the prompt
             combined_prompt = f"{prompt_req.prompt}\n\nPrevious code:\n{prev_code}" if prev_code else prompt_req.prompt
             code = await generate_code(combined_prompt)
             with open(script_path, "w") as f:
@@ -127,26 +160,40 @@ async def generate(prompt_req: PromptRequest, background_tasks: BackgroundTasks)
 
             render_with_manim(script_path, video_path)
 
-            # Append step data
-            jobs[job_id]["steps"].append({
-                "prompt": prompt_req.prompt,
-                "code_path": script_path,
-                "video_path": video_path
-            })
+            new_step = Step(
+                job_id = job_id,
+                prompt = prompt_req.prompt,
+                code = code,
+                video_url = video_path,
+                step_number = step_index
+            )
 
-            jobs[job_id]["status"] = "done"
+            db_bg.add(new_step)
+            job_in_db = db_bg.query(Job).filter_by(id=job_id).first()
+            job_in_db.status = "done"
+            db_bg.commit()
+
+
         except Exception as e:
-            jobs[job_id]["status"] = f"error: {str(e)}"
+            job_in_db = db_bg.query(Job).filter_by(id=job_id).first()
+            job_in_db.status = f"error: {str(e)}"
+            db_bg.commit()
+        finally:
+            db_bg.close()
 
     background_tasks.add_task(process_job)
-    return {"job_id": job_id, "step": step_index}
+    return {"job_id": job_id, "step": step_index, "video_url": video_url}
 
 
 @app.get("/job/{job_id}")
-async def get_job_status(job_id : str):
-    if job_id not in jobs:
-        raise HTTPException(status_code=404,detail="Not found")
-    return jobs[job_id]
+async def get_job_status(job_id : str,db  :Session = Depends(get_db)):
+    job = db.query(Job).filter_by(id=job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return {
+        "id": job.id,
+        "status": job.status
+    }
 
 
 

@@ -5,19 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c99cc48b-ffc2-436c-ae0d-75614d97b662" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_0/720p30/partial_movie_files/AnimationScene/2016333726_359695016_223132457.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_0/720p30/partial_movie_files/AnimationScene/543634251_4217992463_149792949.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_0/720p30/partial_movie_files/AnimationScene/partial_movie_file_list.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_0/720p30/step_0.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_1/720p30/partial_movie_files/AnimationScene/2016333726_359695016_223132457.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_1/720p30/partial_movie_files/AnimationScene/543634251_1998412521_1382056093.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_1/720p30/partial_movie_files/AnimationScene/543634251_4217992463_149792949.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_1/720p30/partial_movie_files/AnimationScene/543634251_4217992463_3947720037.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_1/720p30/partial_movie_files/AnimationScene/partial_movie_file_list.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/videos/step_1/720p30/step_1.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/step_0.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/jobs/bd8a7863-b44f-4983-bbda-fd285d85d3d1/step_1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/jobs/4d2d8aa9-476f-42f3-90eb-b333c5a2250e/steps/media/videos/step_0/720p30/partial_movie_files/AnimationScene/2016333726_3789429803_223132457.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/jobs/4d2d8aa9-476f-42f3-90eb-b333c5a2250e/steps/media/videos/step_0/720p30/partial_movie_files/AnimationScene/543634251_4217992463_151624741.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/jobs/4d2d8aa9-476f-42f3-90eb-b333c5a2250e/steps/media/videos/step_0/720p30/partial_movie_files/AnimationScene/partial_movie_file_list.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/jobs/4d2d8aa9-476f-42f3-90eb-b333c5a2250e/steps/media/videos/step_0/720p30/step_0.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/jobs/4d2d8aa9-476f-42f3-90eb-b333c5a2250e/steps/step_0.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +74,9 @@
       <workItem from="1746676323068" duration="1239000" />
       <workItem from="1746680538832" duration="638000" />
       <workItem from="1746684616393" duration="11655000" />
-      <workItem from="1746705726211" duration="2232000" />
+      <workItem from="1746705726211" duration="9143000" />
+      <workItem from="1746796481556" duration="4307000" />
+      <workItem from="1746881736146" duration="10244000" />
     </task>
     <servers />
   </component>

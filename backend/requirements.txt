@@ -2,3 +2,6 @@ fastapi
 uvicorn[standard]
 manim
 google-genai
+sqlalchemy
+psycopg2-binary
+imagekitio
