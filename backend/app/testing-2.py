@@ -4,7 +4,7 @@ import os
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional,List
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -40,8 +40,16 @@ os.makedirs(BASE_DIR,exist_ok=True)
 
 
 class PromptRequest(BaseModel):
-
     prompt: str
+
+class ContentBlock(BaseModel):
+    type : str
+    value : str
+    language: Optional[str] = None
+
+class MessageContent(BaseModel):
+    content: List[ContentBlock]
+
 
 def upload_to_imagekit(video_path: str, file_name: str):
     with open(video_path, "rb") as video_file:
@@ -64,11 +72,6 @@ Do not include any import statements.
 Output only the full Python code.
 No explanation, comments, or extra text.
 
-Example: 
-Use Triangle() without the side_length argument:
-triangle = Triangle(color=GREEN)
-If you want to resize it, use the scale() method like this:
-triangle = Triangle(color=GREEN).scale(2)
 """
     client = genai.Client(api_key=GOOGLE_KEY)
 
@@ -112,7 +115,7 @@ async def generate(prompt_req: PromptRequest):
 
     db = SessionLocal()
     try:
-        # Step 1: Generate Manim code
+
         code = await generate_code(prompt_req.prompt)
         with open(file_path, "w") as f:
             f.write(code)
@@ -120,18 +123,24 @@ async def generate(prompt_req: PromptRequest):
 
             render_manim(file_path)
 
-        # Step 3: Find output video
+
         video_files = glob.glob(os.path.join(BASE_DIR, "**", "*.mp4"), recursive=True)
         if not video_files:
-            return {"success": False, "message": "Video rendering failed"}
+            return {
+                "success": False,
+                "message": "Video rendering failed",
+                "content": [
+                    {"type": "text", "value": "Failed to render the animation. Please try again with a different prompt."}
+                ]
+            }
 
         video_path = video_files[0]
         file_name = os.path.basename(video_path)
 
-        # Step 4: Upload to ImageKit
+
         public_url = upload_to_imagekit(video_path, file_name)
 
-        # Step 5: Save to DB
+
         new_manim = Manim(
             prompt=prompt_req.prompt,
             code=code,
@@ -143,13 +152,24 @@ async def generate(prompt_req: PromptRequest):
 
         return {
             "success": True,
-            "code": code,
-            "video_url": public_url
+            "video_url": public_url,
+            "content": [
+                {"type": "text", "value": "Here's your Manim animation:"},
+                {"type": "code", "language": "python", "value": f"{code}"},
+                {"type": "text", "value": f"The animation has been rendered and is available at: {public_url}"}
+            ]
         }
 
     except Exception as e:
         print("Error:", e)
-        return {"success": False, "message": str(e)}
+        return {
+            "success": False,
+            "message": str(e),
+            "content": [
+                {"type": "text", "value": f"An error occurred: {str(e)}"},
+                {"type": "text", "value": "Please try again with a different prompt."}
+            ]
+        }
     finally:
         db.close()
 

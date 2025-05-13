@@ -5,18 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c99cc48b-ffc2-436c-ae0d-75614d97b662" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/app/testing-2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/Home.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app/temp/manim_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/manim_code.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/testing-2.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/testing-2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatInterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatInterface.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +84,9 @@
       <workItem from="1747054069499" duration="7755000" />
       <workItem from="1747065505933" duration="2187000" />
       <workItem from="1747068263627" duration="14000" />
-      <workItem from="1747142309330" duration="10661000" />
+      <workItem from="1747142309330" duration="12702000" />
+      <workItem from="1747157622088" duration="2824000" />
+      <workItem from="1747160807897" duration="1832000" />
     </task>
     <servers />
   </component>
