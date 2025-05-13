@@ -1,14 +1,19 @@
-import ChatInterface from "./components/ChatInterface.tsx";
+
+import {BrowserRouter,Routes,Route} from "react-router";
+import Home from "./pages/Home.tsx";
+import Chat from "./pages/chat.tsx";
 
 function App() {
 
 
   return (
-    <div className="h-screen flex flex-col space-y-2 items-center justify-center">
-        <h1 className="text-5xl font-medium">What do you want to render?</h1>
-        <p className="text-neutral-400">Prompt, run, edit, and deploy 2d animation videos.</p>
-        <ChatInterface />
-    </div>
+    <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<Home/>}/>
+            <Route path="/chats" element={<Chat/>}/>
+
+        </Routes>
+    </BrowserRouter>
   )
 }
 

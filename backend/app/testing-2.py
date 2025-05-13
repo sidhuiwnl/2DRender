@@ -40,7 +40,7 @@ os.makedirs(BASE_DIR,exist_ok=True)
 
 
 class PromptRequest(BaseModel):
-    job_id: Optional[str] = None
+
     prompt: str
 
 def upload_to_imagekit(video_path: str, file_name: str):
@@ -107,45 +107,52 @@ def get_db():
 
 
 @app.post("/generate")
-async def generate(prompt_req: PromptRequest, background_tasks: BackgroundTasks):
-
+async def generate(prompt_req: PromptRequest):
     file_path = os.path.join(BASE_DIR, "manim_code.py")
 
-    async def process_job():
-        db_bg = SessionLocal()
-        try:
-            code = await generate_code(prompt_req.prompt)
-            with open(file_path, "w") as f:
-                f.write(code)
+    db = SessionLocal()
+    try:
+        # Step 1: Generate Manim code
+        code = await generate_code(prompt_req.prompt)
+        with open(file_path, "w") as f:
+            f.write(code)
+
+
             render_manim(file_path)
 
-            video_files = glob.glob(os.path.join(BASE_DIR, "**", "*.mp4"), recursive=True)
-            if video_files:
-                video_path = video_files[0]
-                file_name = os.path.basename(video_path)
-                public_url = upload_to_imagekit(video_path, file_name)
+        # Step 3: Find output video
+        video_files = glob.glob(os.path.join(BASE_DIR, "**", "*.mp4"), recursive=True)
+        if not video_files:
+            return {"success": False, "message": "Video rendering failed"}
 
-                new_manim = Manim(
-                    prompt=prompt_req.prompt,
-                    code=code,
-                    video_url=public_url,
-                    status="done"
-                )
-                db_bg.add(new_manim)
-                db_bg.commit()
-        except Exception as e:
-            print("Error in background job:", e)
-        finally:
-            db_bg.close()
-    background_tasks.add_task(process_job)
+        video_path = video_files[0]
+        file_name = os.path.basename(video_path)
 
+        # Step 4: Upload to ImageKit
+        public_url = upload_to_imagekit(video_path, file_name)
 
+        # Step 5: Save to DB
+        new_manim = Manim(
+            prompt=prompt_req.prompt,
+            code=code,
+            video_url=public_url,
+            status="done"
+        )
+        db.add(new_manim)
+        db.commit()
 
-    return {
-        "success": True,
-        "code" : code,
+        return {
+            "success": True,
+            "code": code,
+            "video_url": public_url
+        }
 
-    }
+    except Exception as e:
+        print("Error:", e)
+        return {"success": False, "message": str(e)}
+    finally:
+        db.close()
+
 
 
 if __name__ == "__main__":
