@@ -1,4 +1,4 @@
-"use client"
+
 
 import type React from "react"
 
@@ -6,10 +6,12 @@ import { ArrowRight,Paperclip } from "lucide-react"
 import { useState } from "react"
 import {cn} from "../lib/utils.ts";
 import { useAutoResizeTextarea } from "../hooks/use-auto-resize-textarea"
-
-
+import {useNavigate} from "react-router";
+import {usePrompt} from "../context/chat-context.tsx";
 
 export default function ChatInterface() {
+    const { setPrompt } = usePrompt();
+    const navigate = useNavigate();
     const [value, setValue] = useState("")
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 72,
@@ -71,6 +73,11 @@ export default function ChatInterface() {
                                         "rounded-lg p-2 bg-black/5 dark:bg-white/5",
                                         "hover:bg-black/10 dark:hover:bg-white/10 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:ring-blue-500",
                                     )}
+                                    onClick={() => {
+                                        navigate(`/chats`)
+                                        setPrompt(value)
+                                    }
+                                }
                                     aria-label="Send message"
                                     disabled={!value.trim()}
                                 >

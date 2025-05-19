@@ -1,7 +1,7 @@
 import glob
 import subprocess
 import os
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional,List
@@ -9,10 +9,11 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 import uvicorn
-from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
-from imagekitio import ImageKit
+# from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
+# from imagekitio import ImageKit
 from models import Manim,SessionLocal
-
+import cloudinary
+import cloudinary.uploader
 
 
 load_dotenv()
@@ -21,11 +22,13 @@ GOOGLE_KEY = os.getenv("GEMINI_API_KEY")
 
 app = FastAPI()
 
-imagekit = ImageKit(
-    public_key=os.getenv("IMAGE_KIT_PUBLIC_KEY"),
-    private_key=os.getenv("IMAGE_KIT_PRIVATE_KEY"),
-    url_endpoint=os.getenv("IMAGE_KIT_URL")
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+
 )
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -51,17 +54,22 @@ class MessageContent(BaseModel):
     content: List[ContentBlock]
 
 
-def upload_to_imagekit(video_path: str, file_name: str):
-    with open(video_path, "rb") as video_file:
-        upload_result = imagekit.upload_file(
-            file=video_file,
-            file_name=file_name,
-            options=UploadFileRequestOptions(
-                is_private_file=False  # Set to True if you want it to be private
-            )
+def upload_to_cloudinary(video_path: str, file_name: str):
+    try:
+        upload_result = cloudinary.uploader.upload(
+            video_path,
+            resource_type="video",
+            public_id=os.path.splitext(file_name)[0],  # Remove .mp4 extension
+            overwrite=True,
+            invalidate=True
         )
-        print(upload_result.url)
-        return upload_result.url
+        print(upload_result["secure_url"])
+        return upload_result["secure_url"]
+
+    except Exception as e:
+        print("Cloudinary upload failed:", e)
+        raise e
+
 
 
 async def generate_code(prompt: str) -> str:
@@ -138,7 +146,7 @@ async def generate(prompt_req: PromptRequest):
         file_name = os.path.basename(video_path)
 
 
-        public_url = upload_to_imagekit(video_path, file_name)
+        public_url = upload_to_cloudinary(video_path, file_name)
 
 
         new_manim = Manim(
@@ -156,7 +164,7 @@ async def generate(prompt_req: PromptRequest):
             "content": [
                 {"type": "text", "value": "Here's your Manim animation:"},
                 {"type": "code", "language": "python", "value": f"{code}"},
-                {"type": "text", "value": f"The animation has been rendered and is available at: {public_url}"}
+                {"type": "link", "value":  public_url }
             ]
         }
 

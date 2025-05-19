@@ -6,11 +6,14 @@ import { useAutoResizeTextarea } from "../hooks/use-auto-resize-textarea";
 import type { MessageType, ContentBlock } from "./PromptSpace.tsx";
 import axios from "axios";
 
+
 type ChatBotProps = {
     setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
 };
 
 export default function ChatBox({ setMessages }: ChatBotProps) {
+
+
     const [value, setValue] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -33,82 +36,105 @@ export default function ChatBox({ setMessages }: ChatBotProps) {
         adjustHeight(true);
         setIsLoading(true);
 
-        try {
-            // Send request to backend
-            const response = await axios.post("http://localhost:3000/generate", {
-                prompt: value.trim(),
-            });
+        const assisstantMessage : MessageType = {
+            type : "assistant",
+            content : [
 
-            if (response.data.success) {
-                // Use the structured content from the backend if available
-                if (response.data.content) {
-                    const assistantMessage: MessageType = {
-                        type: "assistant",
-                        content: response.data.content,
-                    };
-                    setMessages((prev) => [...prev, assistantMessage]);
-                } else {
-                    // Fallback for backward compatibility with older API responses
-                    const { code, video_url } = response.data;
-
-                    // Create structured content blocks manually
-                    const contentBlocks: ContentBlock[] = [
-                        { type: "text", value: "Here's your Manim animation:" },
-                        { type: "code", language: "python", value: `from manim import *\n\n${code}` },
-                    ];
-
-                    // Add video URL information if available
-                    if (video_url) {
-                        contentBlocks.push({
-                            type: "text",
-                            value: `The animation has been rendered and is available at: ${video_url}`
-                        });
-                    }
-
-                    const assistantMessage: MessageType = {
-                        type: "assistant",
-                        content: contentBlocks,
-                    };
-
-                    setMessages((prev) => [...prev, assistantMessage]);
-                }
-            } else {
-                // Handle error response with structured content if available
-                if (response.data.content) {
-                    const errorMessage: MessageType = {
-                        type: "assistant",
-                        content: response.data.content,
-                    };
-                    setMessages((prev) => [...prev, errorMessage]);
-                } else {
-                    // Fallback error message
-                    const errorMessage: MessageType = {
-                        type: "assistant",
-                        content: [
-                            {
-                                type: "text",
-                                value: `⚠️ ${response.data.message || "Failed to generate animation. Please try again."}`
-                            }
-                        ],
-                    };
-                    setMessages((prev) => [...prev, errorMessage]);
-                }
-            }
-        } catch (err) {
-            // Create error message with structured content
-            const errorMessage: MessageType = {
-                type: "assistant",
-                content: [
                     {
-                        type: "text",
-                        value: `❌ Error: ${err instanceof Error ? err.message : String(err)}`
+                        "type": "text",
+                        "value": "Here's your Manim animation:"
+                    },
+                    {
+                        "type": "code",
+                        "language": "python",
+                        "value": "from manim import *\n\nclass AnimationScene(Scene):\n    def construct(self):\n        circle = Circle(color=BLUE, fill_opacity=0.5)\n        rectangle = Rectangle(width=3, height=2, color=GREEN, fill_opacity=0.5)\n\n        self.play(Create(circle))\n        self.wait(1)\n\n        self.play(Transform(circle, rectangle))\n        self.wait(1)\n\n        self.play(FadeOut(circle))\n        self.wait(1)"
+                    },
+                    {
+                        "type": "text",
+                        "value": "https://res.cloudinary.com/domrmiesw/video/upload/v1747664162/AnimationScene.mp4"
                     }
-                ],
-            };
-            setMessages((prev) => [...prev, errorMessage]);
-        } finally {
-            setIsLoading(false);
+                ]
+
         }
+
+        setMessages((prev) => [...prev, assisstantMessage]);
+
+        // try {
+        //     // Send request to backend
+        //     const response = await axios.post("http://localhost:3000/generate", {
+        //         prompt: value.trim(),
+        //     });
+        //
+        //     if (response.data.success) {
+        //
+        //         if (response.data.content) {
+        //             const assistantMessage: MessageType = {
+        //                 type: "assistant",
+        //                 content: response.data.content,
+        //             };
+        //             setMessages((prev) => [...prev, assistantMessage]);
+        //         } else {
+        //
+        //             const { code, video_url } = response.data;
+        //
+        //             // Create structured content blocks manually
+        //             const contentBlocks: ContentBlock[] = [
+        //                 { type: "text", value: "Here's your Manim animation:" },
+        //                 { type: "code", language: "python", value: `from manim import *\n\n${code}` },
+        //             ];
+        //
+        //
+        //             if (video_url) {
+        //                 contentBlocks.push({
+        //                     type: "text",
+        //                     value: `The animation has been rendered and is available at: ${video_url}`
+        //                 });
+        //             }
+        //
+        //             const assistantMessage: MessageType = {
+        //                 type: "assistant",
+        //                 content: contentBlocks,
+        //             };
+        //
+        //             setMessages((prev) => [...prev, assistantMessage]);
+        //         }
+        //     } else {
+        //         // Handle error response with structured content if available
+        //         if (response.data.content) {
+        //             const errorMessage: MessageType = {
+        //                 type: "assistant",
+        //                 content: response.data.content,
+        //             };
+        //             setMessages((prev) => [...prev, errorMessage]);
+        //         } else {
+        //             // Fallback error message
+        //             const errorMessage: MessageType = {
+        //                 type: "assistant",
+        //                 content: [
+        //                     {
+        //                         type: "text",
+        //                         value: `⚠️ ${response.data.message || "Failed to generate animation. Please try again."}`
+        //                     }
+        //                 ],
+        //             };
+        //             setMessages((prev) => [...prev, errorMessage]);
+        //         }
+        //     }
+        // } catch (err) {
+        //
+        //     const errorMessage: MessageType = {
+        //         type: "assistant",
+        //         content: [
+        //             {
+        //                 type: "text",
+        //                 value: `❌ Error: ${err instanceof Error ? err.message : String(err)}`
+        //             }
+        //         ],
+        //     };
+        //     setMessages((prev) => [...prev, errorMessage]);
+        // } finally {
+        //     setIsLoading(false);
+        // }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -138,7 +164,7 @@ export default function ChatBox({ setMessages }: ChatBotProps) {
             disabled={isLoading}
         />
 
-                {/* Send button */}
+
                 <button
                     type="button"
                     className={cn(
