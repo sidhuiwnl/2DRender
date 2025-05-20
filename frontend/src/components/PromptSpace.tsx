@@ -1,9 +1,9 @@
 import ChatBox from "./ChatBox";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import SlideInPreview from "./SlideInPreview";
+import {User,Computer} from "lucide-react";
+
 
 export type ContentBlock = {
     type: "text" | "code" | "link";
@@ -18,46 +18,47 @@ export type MessageType = {
 
 const ContentBlockRenderer = ({
                                   block,
-                                  onPreviewClick
+                                  onPreviewClick,
+                                  onSendCode,
+    isAssistant
                               }: {
     block: ContentBlock;
     onPreviewClick: (videoLink: string) => void;
+    onSendCode: (code: string) => void;
+    isAssistant: boolean;
 }) => {
     if (block.type === "text") {
-        return <div className="mb-2 whitespace-pre-wrap">{block.value}</div>;
-    } else if (block.type === "link") {
-        return (
-            <div className="mb-4 rounded-md overflow-hidden">
-                <SyntaxHighlighter
-                    language={block.language || "plaintext"}
-                    style={prism}
-                    showLineNumbers
-                    customStyle={{ borderRadius: "0.375rem", margin: "0" }}
-                >
-                    {block.value}
-                </SyntaxHighlighter>
-            </div>
-        );
-    } else if (block.type === "code") {
         return (
             <div className="mb-2">
-                <div className="text-blue-400 break-all">{block.value}</div>
-                <button
+                <div className="mb-2 whitespace-pre-wrap">{block.value}</div>
+
+                { isAssistant &&  <button
                     onClick={() => onPreviewClick(block.value)}
                     className="text-xs text-blue-400 mt-2 underline"
                 >
                     Show Animation
-                </button>
+                </button>}
+
             </div>
+
         );
+
+    }else if(block.type === "link") {
+        onPreviewClick(block.value);
+    }else{
+        // Send code silently to the parent, don’t render
+        onSendCode(block.value);
+        return null;
     }
     return null;
 };
+
 
 export default function PromptSpace() {
     const [messages, setMessages] = useState<MessageType[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const [videoLink, setVideoLink] = useState("");
+    const[lastestcode,setLastestcode] = useState("");
 
     const handleShowAnimation = (link: string) => {
         setVideoLink(link);
@@ -65,11 +66,14 @@ export default function PromptSpace() {
     };
 
     const closePreview = () => {
+        console.log("closing")
         setShowPreview(false);
+
     };
 
     return (
         <div className="flex w-full h-full justify-center overflow-hidden relative">
+
             <motion.div
                 animate={{
                     width: showPreview ? "50%" : "100%",
@@ -81,6 +85,7 @@ export default function PromptSpace() {
                 <div className="flex-1 overflow-y-auto w-full p-6 space-y-4">
                     {messages.map((msg, i) => (
                         <div key={i} className={`flex ${msg.type === "user" ? "justify-start" : "justify-end"}`}>
+                            {msg.type === "user" && <User className="w-5 h-5 mt-1 mr-5 text-neutral-500 dark:text-neutral-400" />}
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -97,11 +102,14 @@ export default function PromptSpace() {
                                             <ContentBlockRenderer
                                                 block={block}
                                                 onPreviewClick={handleShowAnimation}
+                                                onSendCode={setLastestcode}
+                                                isAssistant = {msg.type === "assistant"}
                                             />
                                         </div>
                                     ))}
                                 </div>
                             </motion.div>
+                            {msg.type === "assistant" && <Computer className="w-5 h-5 mt-1 ml-5 text-neutral-500 dark:text-neutral-400" />}
                         </div>
                     ))}
                 </div>
@@ -115,6 +123,7 @@ export default function PromptSpace() {
                 isOpen={showPreview}
                 onClose={closePreview}
                 videoLink={videoLink}
+                code={lastestcode}
             />
         </div>
     );
