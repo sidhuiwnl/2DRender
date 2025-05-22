@@ -23,7 +23,8 @@ export default function ChatInterface() {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault()
-            setValue("")
+            navigate("/chats")
+            setPrompt(value)
             adjustHeight(true)
         }
     }

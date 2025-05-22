@@ -22,7 +22,7 @@ export default function ChatBox({ setMessages }: ChatBotProps) {
         maxHeight: 300,
     });
 
-    const sendMessage = async () => {
+     const sendMessage = async () => {
         if (!value.trim()) return;
 
         // Create user message with content as a single text block

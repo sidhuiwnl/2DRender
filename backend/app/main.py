@@ -72,17 +72,19 @@ def upload_to_cloudinary(video_path: str, file_name: str):
 
 
 
-async def generate_code(prompt: str) -> str:
+async def generate_code(prompt: str) -> list[dict]:
     system_instruction = """
-Generate a Python Manim animation script using the latest best practices.
-Use a single Scene class named AnimationScene.
-Do not include any import statements.
-Output only the full Python code.
-No explanation, comments, or extra text.
+    When responding to requests for Manim animations:
+    1. First provide a brief explanation of how the animation works and what it demonstrates.
+    2. Then output the full Python Manim code starting with ```python and ending with ```.
+    3. The code should use a single Scene class named AnimationScene.
+    4. Do not include import statements, comments in the code.
+    5. Make sure to separate the explanation and code clearly.
+    6. Make sure to give manim code that uses latest manim syntax.
+    7.Don’t want to use LaTeX, use Text() instead of MathTex() or Integer()
+    """
 
-"""
     client = genai.Client(api_key=GOOGLE_KEY)
-
     contents = [types.Content(role="user", parts=[types.Part(text=prompt)])]
 
     response = client.models.generate_content(
@@ -91,12 +93,37 @@ No explanation, comments, or extra text.
         contents=contents
     )
 
-    code = response.candidates[0].content.parts[0].text.strip()
-    if code.startswith("```"):
-        code = code.split("```")[1].strip()
-    lines = [line for line in code.splitlines() if line.strip().lower() != "python"]
-    return "\n".join(lines)
+    full_text = response.candidates[0].content.parts[0].text.strip()
 
+    # Split explanation and code
+    if "```" in full_text:
+        explanation, code_block = full_text.split("```", 1)
+
+        # Remove both opening ```python and closing ```
+        code_lines = [
+            line for line in code_block.splitlines()
+            if line.strip().lower() != "python" and line.strip() != "```"
+        ]
+        code = "\n".join(code_lines).strip()
+
+    else:
+        explanation = full_text
+        code = ""
+
+    return [
+        {"type": "explanation", "data": explanation.strip()},
+        {"type": "code", "data": code}
+    ]
+
+
+
+# @app.post("/gemini-code")
+# async def generate_gemini_code(prompt : PromptRequest):
+#     response = await generate_code(prompt.prompt)
+#
+#     return {
+#         "response" : response
+#     }
 
 
 
@@ -124,12 +151,15 @@ async def generate(prompt_req: PromptRequest):
     db = SessionLocal()
     try:
 
-        code = await generate_code(prompt_req.prompt)
-        with open(file_path, "w") as f:
-            f.write(code)
+        output = await generate_code(prompt_req.prompt)
 
+        explanation = next((item["data"] for item in output if item["type"] == "explanation"), "")
+        code = next((item["data"] for item in output if item["type"] == "code"), "")
 
-            render_manim(file_path)
+        # with open(file_path,"w") as f:
+        #     f.write(code)
+
+        render_manim(file_path)
 
 
         video_files = glob.glob(os.path.join(BASE_DIR, "**", "*.mp4"), recursive=True)
@@ -160,11 +190,10 @@ async def generate(prompt_req: PromptRequest):
 
         return {
             "success": True,
-            "video_url": public_url,
             "content": [
-                {"type": "text", "value": "Here's your Manim animation:"},
+                {"type": "text", "value": explanation},
                 {"type": "code", "language": "python", "value": f"{code}"},
-                {"type": "text", "value": f"The animation has been rendered and is available at: {public_url}"}
+                {"type": "link", "value":  public_url}
             ]
         }
 
@@ -180,7 +209,6 @@ async def generate(prompt_req: PromptRequest):
         }
     finally:
         db.close()
-
 
 
 if __name__ == "__main__":

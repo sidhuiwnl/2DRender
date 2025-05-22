@@ -5,19 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c99cc48b-ffc2-436c-ae0d-75614d97b662" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/SlideInPreview.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/context/chat-context.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app/temp/manim_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/manim_code.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/AnimationScene.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/AnimationScene.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/partial_movie_file_list.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/partial_movie_file_list.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app/testing-2.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/testing-2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/testing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatInterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatInterface.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +94,9 @@
       <workItem from="1747502188922" duration="956000" />
       <workItem from="1747543185357" duration="16000" />
       <workItem from="1747568088987" duration="2623000" />
-      <workItem from="1747661921732" duration="6673000" />
+      <workItem from="1747661921732" duration="7806000" />
+      <workItem from="1747745463815" duration="16596000" />
+      <workItem from="1747922129477" duration="7608000" />
     </task>
     <servers />
   </component>
@@ -115,8 +113,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx</url>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx</url>
+          <line>76</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -1,9 +1,9 @@
 import ChatBox from "./ChatBox";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { motion } from "framer-motion";
 import SlideInPreview from "./SlideInPreview";
 import {User,Computer} from "lucide-react";
-
+import {usePrompt} from "../context/chat-context.tsx";
 
 export type ContentBlock = {
     type: "text" | "code" | "link";
@@ -55,10 +55,54 @@ const ContentBlockRenderer = ({
 
 
 export default function PromptSpace() {
+    const { prompt } = usePrompt();
     const [messages, setMessages] = useState<MessageType[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const [videoLink, setVideoLink] = useState("");
     const[lastestcode,setLastestcode] = useState("");
+
+    const handleAssistantResponse = async () => {
+        console.log("Assistant Response");
+        // Simulate a delay or call your LLM backend here
+        const assistantReply = "Hello, I’m your assistant. How can I help?";
+
+        const assistantMessage: MessageType = {
+            type: "assistant",
+            content: [{ type: "text", value: assistantReply }],
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+    };
+
+    useEffect(() => {
+
+        if(!prompt) return;
+
+        let shouldTriggerAssistant = false;
+
+        setMessages(prev => {
+            const aldreadyHasPrompt = prev.some(m => m.type === "user" && m.content[0]?.value === prompt);
+
+            if(aldreadyHasPrompt) return prev;
+
+            shouldTriggerAssistant = true;
+
+            const userMessage: MessageType = {
+                type: "user",
+                content: [{ type: "text", value: prompt }],
+            };
+
+            return [...prev, userMessage];
+
+        })
+
+        if (shouldTriggerAssistant) {
+            handleAssistantResponse();
+        }
+
+    }, []);
+
+
 
     const handleShowAnimation = (link: string) => {
         setVideoLink(link);
