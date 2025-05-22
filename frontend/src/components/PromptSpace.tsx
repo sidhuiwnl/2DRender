@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import SlideInPreview from "./SlideInPreview";
 import {User,Computer} from "lucide-react";
 import {usePrompt} from "../context/chat-context.tsx";
+import ReactMarkdown from 'react-markdown';
+
 
 export type ContentBlock = {
     type: "text" | "code" | "link";
@@ -20,37 +22,38 @@ const ContentBlockRenderer = ({
                                   block,
                                   onPreviewClick,
                                   onSendCode,
-    isAssistant
+                                  isAssistant
                               }: {
     block: ContentBlock;
     onPreviewClick: (videoLink: string) => void;
     onSendCode: (code: string) => void;
     isAssistant: boolean;
 }) => {
-    if (block.type === "text") {
+    if (block.type === "text" ) {
         return (
-            <div className="mb-2">
-                <div className="mb-2 whitespace-pre-wrap">{block.value}</div>
+            <div className="mb-4 p-3 rounded-lg shadow-sm">
+                <div className="">
+                    <ReactMarkdown className="prose prose-sm max-w-none text-white prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white prose-a:text-white">
+                        {block.value}
+                    </ReactMarkdown>
+                </div>
 
-                { isAssistant &&  <button
-                    onClick={() => onPreviewClick(block.value)}
-                    className="text-xs text-blue-400 mt-2 underline"
-                >
-                    Show Animation
-                </button>}
 
+                {isAssistant && (
+                    <button
+                        onClick={() => onPreviewClick(block.value)}
+                        className="mt-3 px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium"
+                    >
+                        Show Animation
+                    </button>
+                )}
             </div>
-
         );
-
-    }else if(block.type === "link") {
-        onPreviewClick(block.value);
-    }else{
-        // Send code silently to the parent, don’t render
+    } else {
+        // Send code silently to the parent, don't render
         onSendCode(block.value);
         return null;
     }
-    return null;
 };
 
 

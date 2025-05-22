@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 body{
     font-family: "DM Sans", sans-serif;
@@ -11,4 +12,8 @@ body{
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
+}
+
+.markdown h1 {
+    color: white; /* Change to any color */
 }

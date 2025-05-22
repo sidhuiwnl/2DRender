@@ -57,6 +57,7 @@ export default function ChatBox({ setMessages }: ChatBotProps) {
         }
 
         setMessages((prev) => [...prev, assisstantMessage]);
+        setIsLoading(false);
 
         // try {
         //     // Send request to backend
