@@ -143,26 +143,25 @@ export default function ChatBox({ setMessages }: ChatBotProps) {
             sendMessage();
         }
     };
-
     return (
-        <div className="w-full px-4 py-2">
-            <div className="bg-black/5 dark:bg-white/5 rounded-xl flex items-end p-2 gap-2">
-        <textarea
-            id="ai-input-15"
-            value={value}
-            placeholder="What can I do for you?"
-            className={cn(
-                "w-full text-sm resize-none border-none bg-transparent placeholder:text-sm p-3 focus:outline-none dark:text-white placeholder:text-black/70 dark:placeholder:text-white/70",
-                "min-h-[48px] max-h-[300px] py-2"
-            )}
-            ref={textareaRef}
-            onKeyDown={handleKeyDown}
-            onChange={(e) => {
-                setValue(e.target.value);
-                adjustHeight();
-            }}
-            disabled={isLoading}
-        />
+        <div className="w-[800px] relative h-full">
+            <div className="bg-white dark:bg-neutral-900 rounded-xl flex items-end p-2 gap-2 shadow-xl">
+                <textarea
+                    id="ai-input-15"
+                    value={value}
+                    placeholder="What can I do for you?"
+                    className={cn(
+                        "w-full text-sm resize-none border-none   placeholder:text-sm p-3 focus:outline-none dark:text-white placeholder:text-black/70 dark:placeholder:text-white/70",
+                        "min-h-[48px] max-h-[300px] py-2"
+                    )}
+                    ref={textareaRef}
+                    onKeyDown={handleKeyDown}
+                    onChange={(e) => {
+                        setValue(e.target.value);
+                        adjustHeight();
+                    }}
+                    disabled={isLoading}
+                />
 
 
                 <button

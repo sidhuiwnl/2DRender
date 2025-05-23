@@ -1,5 +1,5 @@
 import ChatBox from "./ChatBox";
-import {useEffect, useState} from "react";
+import {useEffect, useState,useRef} from "react";
 import { motion } from "framer-motion";
 import SlideInPreview from "./SlideInPreview";
 import {User,Computer} from "lucide-react";
@@ -29,7 +29,8 @@ const ContentBlockRenderer = ({
     onSendCode: (code: string) => void;
     isAssistant: boolean;
 }) => {
-    if (block.type === "text" ) {
+    // Handle different content block types
+    if (block.type === "text") {
         return (
             <div className="mb-4 p-3 rounded-lg shadow-sm">
                 <div className="">
@@ -37,37 +38,67 @@ const ContentBlockRenderer = ({
                         {block.value}
                     </ReactMarkdown>
                 </div>
+            </div>
+        );
+    } else if (block.type === "code") {
+        // Send code to parent and also render it
+        onSendCode(block.value);
 
-
-                {isAssistant && (
+    } else if (block.type === "link") {
+        // Handle video links - send to parent for preview
+        if (isAssistant && block.value.includes('.mp4')) {
+            return (
+                <div className="mb-4 p-3 rounded-lg shadow-sm">
                     <button
                         onClick={() => onPreviewClick(block.value)}
-                        className="mt-3 px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium"
+                        className="px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium"
                     >
                         Show Animation
                     </button>
-                )}
-            </div>
-        );
-    } else {
-        // Send code silently to the parent, don't render
-        onSendCode(block.value);
-        return null;
+                </div>
+            );
+        } else {
+            // Regular link
+            return (
+                <div className="mb-4 p-3 rounded-lg shadow-sm">
+                    <a
+                        href={block.value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:text-blue-300 underline"
+                    >
+                        {block.value}
+                    </a>
+                </div>
+            );
+        }
     }
-};
 
+    return null;
+};
 
 export default function PromptSpace() {
     const { prompt } = usePrompt();
     const [messages, setMessages] = useState<MessageType[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const [videoLink, setVideoLink] = useState("");
-    const[lastestcode,setLastestcode] = useState("");
+    const[latestCode,setLatestCode] = useState("");
+    const messageEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messageEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+        })
+    }
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     const handleAssistantResponse = async () => {
         console.log("Assistant Response");
         // Simulate a delay or call your LLM backend here
-        const assistantReply = "Hello, I’m your assistant. How can I help?";
+        const assistantReply = "Hello, I'm your assistant. How can I help?";
 
         const assistantMessage: MessageType = {
             type: "assistant",
@@ -105,7 +136,9 @@ export default function PromptSpace() {
 
     }, []);
 
-
+    const handleCodeExtraction = (code: string) => {
+        setLatestCode(code);
+    };
 
     const handleShowAnimation = (link: string) => {
         setVideoLink(link);
@@ -119,19 +152,18 @@ export default function PromptSpace() {
     };
 
     return (
-        <div className="flex w-full h-full justify-center overflow-hidden relative">
-
+        <div className="flex  overflow-hidden relative h-screen">
             <motion.div
                 animate={{
                     width: showPreview ? "50%" : "100%",
                     x: showPreview ? -400 : 0
-            }}
+                }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="max-w-2xl flex flex-col items-center flex-shrink-0 mx-auto"
+                className="max-w-2xl flex flex-col items-center flex-shrink-0 mx-auto h-full"
             >
-                <div className="flex-1 overflow-y-auto w-full p-6 space-y-4">
+                <div className="flex-1 overflow-y-auto w-full px-6 pt-6 pb-10 space-y-4 scrollbar-hide ">
                     {messages.map((msg, i) => (
-                        <div key={i} className={`flex ${msg.type === "user" ? "justify-start" : "justify-end"}`}>
+                        <div key={i} className={`flex ${msg.type === "user" ? "justify-start" : "justify-end"} `}>
                             {msg.type === "user" && <User className="w-5 h-5 mt-1 mr-5 text-neutral-500 dark:text-neutral-400" />}
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
@@ -139,29 +171,32 @@ export default function PromptSpace() {
                                 transition={{ duration: 0.2 }}
                                 className="max-w-md"
                             >
-                                <div className={`rounded-xl px-4 py-3 text-sm ${
+                                <div className={`rounded-xl  text-sm ${
                                     msg.type === "user"
                                         ? "bg-neutral-200 text-black dark:bg-neutral-800 dark:text-white"
                                         : "bg-neutral-900 text-white"
                                 }`}>
                                     {msg.content.map((block, j) => (
-                                        <div key={j}>
-                                            <ContentBlockRenderer
-                                                block={block}
-                                                onPreviewClick={handleShowAnimation}
-                                                onSendCode={setLastestcode}
-                                                isAssistant = {msg.type === "assistant"}
-                                            />
-                                        </div>
+                                        <ContentBlockRenderer
+                                            key={j}
+                                            block={block}
+                                            onPreviewClick={handleShowAnimation}
+                                            onSendCode={handleCodeExtraction}
+                                            isAssistant={msg.type === "assistant"}
+                                        />
                                     ))}
                                 </div>
+
                             </motion.div>
+
                             {msg.type === "assistant" && <Computer className="w-5 h-5 mt-1 ml-5 text-neutral-500 dark:text-neutral-400" />}
+
                         </div>
                     ))}
+                    <div ref={messageEndRef} />
                 </div>
 
-                <div className="w-full p-4 dark:border-neutral-800">
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-50">
                     <ChatBox setMessages={setMessages} />
                 </div>
             </motion.div>
@@ -170,7 +205,7 @@ export default function PromptSpace() {
                 isOpen={showPreview}
                 onClose={closePreview}
                 videoLink={videoLink}
-                code={lastestcode}
+                code={latestCode}
             />
         </div>
     );
