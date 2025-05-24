@@ -9,8 +9,6 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 import uvicorn
-# from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
-# from imagekitio import ImageKit
 from models import Manim,SessionLocal
 import cloudinary
 import cloudinary.uploader
@@ -117,13 +115,6 @@ async def generate_code(prompt: str) -> list[dict]:
 
 
 
-# @app.post("/gemini-code")
-# async def generate_gemini_code(prompt : PromptRequest):
-#     response = await generate_code(prompt.prompt)
-#
-#     return {
-#         "response" : response
-#     }
 
 
 
@@ -156,8 +147,8 @@ async def generate(prompt_req: PromptRequest):
         explanation = next((item["data"] for item in output if item["type"] == "explanation"), "")
         code = next((item["data"] for item in output if item["type"] == "code"), "")
 
-        # with open(file_path,"w") as f:
-        #     f.write(code)
+        with open(file_path,"w") as f:
+            f.write(code)
 
         render_manim(file_path)
 

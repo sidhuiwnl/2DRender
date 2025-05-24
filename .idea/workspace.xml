@@ -5,16 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c99cc48b-ffc2-436c-ae0d-75614d97b662" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/Main.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/sample.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/manim_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/manim_code.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/AnimationScene.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/AnimationScene.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/partial_movie_file_list.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/partial_movie_file_list.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/SlideInPreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SlideInPreview.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/app-sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Home.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +101,8 @@
       <workItem from="1747922129477" duration="10045000" />
       <workItem from="1748006521548" duration="11209000" />
       <workItem from="1748068006454" duration="833000" />
-      <workItem from="1748072890252" duration="9630000" />
+      <workItem from="1748072890252" duration="9995000" />
+      <workItem from="1748095292048" duration="9469000" />
     </task>
     <servers />
   </component>

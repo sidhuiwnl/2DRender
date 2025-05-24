@@ -2,7 +2,7 @@ import ChatBox from "./ChatBox";
 import {useEffect, useState,useRef} from "react";
 import { motion } from "framer-motion";
 import SlideInPreview from "./SlideInPreview";
-import {User,Computer} from "lucide-react";
+import {User,Computer,ChevronRight} from "lucide-react";
 import {usePrompt} from "../context/chat-context.tsx";
 import ReactMarkdown from 'react-markdown';
 
@@ -29,15 +29,16 @@ const ContentBlockRenderer = ({
     onSendCode: (code: string) => void;
     isAssistant: boolean;
 }) => {
+    const displayTime = new Date().toLocaleTimeString();
     // Handle different content block types
     if (block.type === "text") {
         return (
             <div className="mb-4 p-3 rounded-lg shadow-sm">
-                <div className="">
-                    <ReactMarkdown className="prose prose-sm max-w-none text-white prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white prose-a:text-white">
+                <div className="text-xs text-gray-400 mb-2">{displayTime}</div>
+                    <ReactMarkdown
+                        className="prose prose-sm max-w-none text-white prose-headings:text-white prose-code:text-white prose-p:text-white prose-strong:text-white prose-li:text-white prose-a:text-white">
                         {block.value}
                     </ReactMarkdown>
-                </div>
             </div>
         );
     } else if (block.type === "code") {
@@ -51,9 +52,10 @@ const ContentBlockRenderer = ({
                 <div className=" p-3 rounded-lg shadow-sm">
                     <button
                         onClick={() => onPreviewClick(block.value)}
-                        className="px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium"
+                        className="px-4 py-2 flex space-x-2 hover:bg-neutral-800  rounded-md border cursor-pointer transition-colors text-sm font-medium"
                     >
-                        Show Animation
+                        <span>Show Animation</span>
+                        <ChevronRight size="20"/>
                     </button>
                 </div>
             );
@@ -146,7 +148,7 @@ export default function PromptSpace() {
     };
 
     const closePreview = () => {
-        console.log("closing")
+
         setShowPreview(false);
     };
 
