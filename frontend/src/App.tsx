@@ -1,19 +1,20 @@
-
-import {BrowserRouter,Routes,Route} from "react-router";
-import Home from "./pages/Home.tsx";
-import Chat from "./pages/chat.tsx";
+import Main from "@/pages/Main.tsx";
+import {SidebarProvider,SidebarTrigger} from "@/components/ui/sidebar.tsx";
+import {AppSidebar} from "@/components/app-sidebar.tsx";
 
 
 function App() {
-  return (
-
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<Home/>}/>
-                    <Route path="/chats" element={<Chat/>}/>
-                </Routes>
-            </BrowserRouter>
-  )
+    return (
+        <div className="flex h-screen w-full">
+            <SidebarProvider>
+                <AppSidebar/>
+                <SidebarTrigger/>
+                <main className="flex-1 min-w-0 h-full">
+                    <Main/>
+                </main>
+            </SidebarProvider>
+        </div>
+    )
 }
 
 export default App

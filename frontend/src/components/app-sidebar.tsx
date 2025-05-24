@@ -1,5 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-
+import { Home, MessageCircle, Plus } from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
@@ -11,56 +10,48 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-// Menu items.
-const items = [
-    {
-        title: "Home",
-        url: "#",
-        icon: Home,
-    },
-    {
-        title: "Inbox",
-        url: "#",
-        icon: Inbox,
-    },
-    {
-        title: "Calendar",
-        url: "#",
-        icon: Calendar,
-    },
-    {
-        title: "Search",
-        url: "#",
-        icon: Search,
-    },
-    {
-        title: "Settings",
-        url: "#",
-        icon: Settings,
-    },
-]
-
 export function AppSidebar() {
     return (
         <Sidebar>
-            <SidebarContent>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Application</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {items.map((item) => (
-                                <SidebarMenuItem key={item.title}>
+            <SidebarContent className="flex flex-col justify-between h-full">
+                <div>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Plura</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                <SidebarMenuItem>
                                     <SidebarMenuButton asChild>
-                                        <a href={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
+                                        <a href="#">
+                                            <Home />
+                                            <span>Home</span>
                                         </a>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton asChild>
+                                        <a href="#">
+                                            <MessageCircle />
+                                            <span>My Chat</span>
+                                        </a>
+                                    </SidebarMenuButton>
+                                    <div className="p-4">
+                                        <SidebarMenuItem>
+                                            <SidebarMenuButton asChild>
+                                                <button className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-primary/90">
+                                                    <Plus size={18} />
+                                                    <span>New Chat</span>
+                                                </button>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    </div>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                </div>
+
+
+
             </SidebarContent>
         </Sidebar>
     )

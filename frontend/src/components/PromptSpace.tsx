@@ -48,7 +48,7 @@ const ContentBlockRenderer = ({
         // Handle video links - send to parent for preview
         if (isAssistant && block.value.includes('.mp4')) {
             return (
-                <div className="mb-4 p-3 rounded-lg shadow-sm">
+                <div className=" p-3 rounded-lg shadow-sm">
                     <button
                         onClick={() => onPreviewClick(block.value)}
                         className="px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium"
@@ -148,65 +148,72 @@ export default function PromptSpace() {
     const closePreview = () => {
         console.log("closing")
         setShowPreview(false);
-
     };
 
     return (
-        <div className="flex  overflow-hidden relative h-screen">
+        <div className="w-full h-screen flex relative overflow-hidden">
+            {/* Main chat area */}
             <motion.div
                 animate={{
                     width: showPreview ? "50%" : "100%",
-                    x: showPreview ? -400 : 0
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="max-w-2xl flex flex-col items-center flex-shrink-0 mx-auto h-full"
+                className="flex flex-col h-full relative"
             >
-                <div className="flex-1 overflow-y-auto w-full px-6 pt-6 pb-10 space-y-4 scrollbar-hide ">
-                    {messages.map((msg, i) => (
-                        <div key={i} className={`flex ${msg.type === "user" ? "justify-start" : "justify-end"} `}>
-                            {msg.type === "user" && <User className="w-5 h-5 mt-1 mr-5 text-neutral-500 dark:text-neutral-400" />}
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.2 }}
-                                className="max-w-md"
-                            >
-                                <div className={`rounded-xl  text-sm ${
-                                    msg.type === "user"
-                                        ? "bg-neutral-200 text-black dark:bg-neutral-800 dark:text-white"
-                                        : "bg-neutral-900 text-white"
-                                }`}>
-                                    {msg.content.map((block, j) => (
-                                        <ContentBlockRenderer
-                                            key={j}
-                                            block={block}
-                                            onPreviewClick={handleShowAnimation}
-                                            onSendCode={handleCodeExtraction}
-                                            isAssistant={msg.type === "assistant"}
-                                        />
-                                    ))}
-                                </div>
 
-                            </motion.div>
-
-                            {msg.type === "assistant" && <Computer className="w-5 h-5 mt-1 ml-5 text-neutral-500 dark:text-neutral-400" />}
-
-                        </div>
-                    ))}
-                    <div ref={messageEndRef} />
+                <div className="flex-1 overflow-y-auto pt-6  scrollbar-hide">
+                    <div className="w-full max-w-4xl  mx-auto px-4">
+                        {messages.map((msg, i) => (
+                            <div key={i} className={`flex ${msg.type === "user" ? "justify-start" : "justify-end"} mb-6`}>
+                                {msg.type === "user" && <User className="w-5 h-5 mt-1 mr-5 text-neutral-500 dark:text-neutral-400 flex-shrink-0" />}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="max-w-md"
+                                >
+                                    <div className={`rounded-xl text-sm ${
+                                        msg.type === "user"
+                                            ? "bg-neutral-200 text-black dark:bg-neutral-800 dark:text-white"
+                                            : "bg-neutral-900 text-white"
+                                    }`}>
+                                        {msg.content.map((block, j) => (
+                                            <ContentBlockRenderer
+                                                key={j}
+                                                block={block}
+                                                onPreviewClick={handleShowAnimation}
+                                                onSendCode={handleCodeExtraction}
+                                                isAssistant={msg.type === "assistant"}
+                                            />
+                                        ))}
+                                    </div>
+                                </motion.div>
+                                {msg.type === "assistant" && <Computer className="w-5 h-5 mt-1 ml-5 text-neutral-500 dark:text-neutral-400 flex-shrink-0" />}
+                            </div>
+                        ))}
+                        <div ref={messageEndRef} />
+                    </div>
                 </div>
 
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-50">
+
+                <div className="sticky bottom-0 left-0 right-0 flex justify-center z-10 px-2 bg-background pt-2 pb-4">
                     <ChatBox setMessages={setMessages} />
                 </div>
             </motion.div>
 
-            <SlideInPreview
-                isOpen={showPreview}
-                onClose={closePreview}
-                videoLink={videoLink}
-                code={latestCode}
-            />
+            <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: showPreview ? "0%" : "100%" }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="absolute top-0 right-0 w-1/2 h-full z-40"
+            >
+                <SlideInPreview
+                    isOpen={showPreview}
+                    onClose={closePreview}
+                    videoLink={videoLink}
+                    code={latestCode}
+                />
+            </motion.div>
         </div>
     );
 }

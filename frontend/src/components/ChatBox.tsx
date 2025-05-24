@@ -145,7 +145,7 @@ export default function ChatBox({ setMessages }: ChatBotProps) {
     };
     return (
         <div className="w-[800px] relative h-full">
-            <div className="bg-white dark:bg-neutral-900 rounded-xl flex items-end p-2 gap-2 shadow-xl">
+            <div className="bg-white dark:bg-neutral-900 rounded-xl flex items-end p-2 gap-2 shadow-xl border border-2">
                 <textarea
                     id="ai-input-15"
                     value={value}

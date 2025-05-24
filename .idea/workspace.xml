@@ -5,20 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c99cc48b-ffc2-436c-ae0d-75614d97b662" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/app-sidebar.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/theme-provider.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/Main.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PromptSpace.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/SlideInPreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SlideInPreview.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/app-sidebar.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/lib/utils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Home.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/tsconfig.app.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/tsconfig.app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vite.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +98,9 @@
       <workItem from="1747661921732" duration="7806000" />
       <workItem from="1747745463815" duration="16596000" />
       <workItem from="1747922129477" duration="10045000" />
-      <workItem from="1748006521548" duration="11028000" />
+      <workItem from="1748006521548" duration="11209000" />
+      <workItem from="1748068006454" duration="833000" />
+      <workItem from="1748072890252" duration="9630000" />
     </task>
     <servers />
   </component>
