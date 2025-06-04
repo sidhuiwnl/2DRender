@@ -1,7 +1,7 @@
 import glob
 import subprocess
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException,Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional,List
@@ -9,9 +9,12 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 import uvicorn
-from models import Manim,SessionLocal
+from sqlalchemy.exc import IntegrityError
+from models import Manim,SessionLocal,User,ChatSession
 import cloudinary
 import cloudinary.uploader
+from sqlalchemy.orm import Session
+
 
 
 load_dotenv()
@@ -42,11 +45,22 @@ os.makedirs(BASE_DIR,exist_ok=True)
 
 class PromptRequest(BaseModel):
     prompt: str
+    user_id : str
+    session_id : Optional[str] = None
+
+class RegisterUser(BaseModel):
+    fullName : str
+    email : str
+    clerkId : str
 
 class ContentBlock(BaseModel):
     type : str
     value : str
     language: Optional[str] = None
+
+class UserSession(BaseModel):
+    user_id : str
+
 
 class MessageContent(BaseModel):
     content: List[ContentBlock]
@@ -54,15 +68,16 @@ class MessageContent(BaseModel):
 
 def upload_to_cloudinary(video_path: str, file_name: str):
     try:
-        upload_result = cloudinary.uploader.upload(
-            video_path,
-            resource_type="video",
-            public_id=os.path.splitext(file_name)[0],  # Remove .mp4 extension
-            overwrite=True,
-            invalidate=True
-        )
-        print(upload_result["secure_url"])
-        return upload_result["secure_url"]
+        # upload_result = cloudinary.uploader.upload(
+        #     video_path,
+        #     resource_type="video",
+        #     public_id=os.path.splitext(file_name)[0],  # Remove .mp4 extension
+        #     overwrite=True,
+        #     invalidate=True
+        # )
+        # print(upload_result["secure_url"])
+        # return upload_result["secure_url"]
+        return "https://res.cloudinary.com/domrmiesw/video/upload/v1747757032/AnimationScene.mp4"
 
     except Exception as e:
         print("Cloudinary upload failed:", e)
@@ -115,9 +130,6 @@ async def generate_code(prompt: str) -> list[dict]:
 
 
 
-
-
-
 def render_manim(file_path: str):
     cmd = ["manim", file_path, "AnimationScene", "-p"]
     try:
@@ -139,8 +151,21 @@ def get_db():
 async def generate(prompt_req: PromptRequest):
     file_path = os.path.join(BASE_DIR, "manim_code.py")
 
+    print(prompt_req.user_id)
+
     db = SessionLocal()
     try:
+        if prompt_req.session_id:
+            session_id = prompt_req.session_id
+            session = db.query(Session).filter_by(id = session_id).first()
+            if not session:
+                raise ValueError("Invalid session ID provided.")
+        else:
+            session = ChatSession(user_id=prompt_req.user_id)
+            db.add(session)
+            db.commit()
+            db.refresh(session)
+            session_id = session.id
 
         output = await generate_code(prompt_req.prompt)
 
@@ -171,6 +196,7 @@ async def generate(prompt_req: PromptRequest):
 
 
         new_manim = Manim(
+            session_id = session_id,
             prompt=prompt_req.prompt,
             code=code,
             video_url=public_url,
@@ -181,6 +207,7 @@ async def generate(prompt_req: PromptRequest):
 
         return {
             "success": True,
+            "session_id" : str(session_id),
             "content": [
                 {"type": "text", "value": explanation},
                 {"type": "code", "language": "python", "value": f"{code}"},
@@ -200,6 +227,73 @@ async def generate(prompt_req: PromptRequest):
         }
     finally:
         db.close()
+
+
+@app.post("/register")
+async def register(user : RegisterUser,db : Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.clerkId == user.clerkId).first()
+
+    if existing_user:
+        return {"message": "User already exists", "id": str(existing_user.id)}
+
+    new_user = User(
+        fullName=user.fullName,
+        email=user.email,
+        clerkId=user.clerkId
+    )
+
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return {"message": "User registered successfully", "id": str(new_user.id)}
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Email or Clerk ID already exists")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@app.post("/session")
+async def session(chat_session : UserSession, db : Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.id == chat_session.user_id).first()
+
+    if existing_user:
+        new_session = ChatSession(
+            user_id = existing_user.id
+        )
+
+        try:
+            db.add(new_session)
+            db.commit()
+            db.refresh(new_session)
+            return  { "message" : "Session Created","sessionId" : str(new_session.id)}
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="User Doen't Exist Please authenticate")
+        except Exception as e:
+            db.rollback()
+        raise HTTPException(status_code=500, detail="Internal server error")
+    else:
+        return {
+            "message" : "User Doen't Exist Please authenticate"
+        }
+
+@app.get("/sessions")
+async def getSessions(chat_session : UserSession, db: Session = Depends(get_db)):
+    sessions = db.query(Session).filter_by(ChatSession.user_id == chat_session.user_id)
+
+    if sessions:
+        return {
+            "message" : "Fetched Sessions",
+            "sessions" : sessions
+        }
+    else:
+        return {
+            "message" : "No Sessions Present"
+        }
+
 
 
 if __name__ == "__main__":

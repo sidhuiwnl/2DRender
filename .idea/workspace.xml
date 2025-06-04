@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c99cc48b-ffc2-436c-ae0d-75614d97b662" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/SignInPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/EditPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/manim_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/manim_code.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/AnimationScene.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/AnimationScene.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1064333444_2038545737.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1273598268_1332071004.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1516673015_3511136365.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1602442528_3609869738.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1721185647_2289113904.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1733185085_2166597644.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1821694688_2373750003.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_2287245093_2373750003.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_2432899909_578674303.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_3394500337_4222577628.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_3394500337_82903673.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_4217992463_3278671325.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_4217992463_3712042578.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_4217992463_687603347.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_86363224_578674303.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/partial_movie_file_list.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/partial_movie_file_list.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatInterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatInterface.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/SlideInPreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SlideInPreview.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/app-sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Home.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Main.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vite.config.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2wm887xdmDHdawLaeYjcXd370vw" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="false" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showScratchesAndConsoles" value="false" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/projects/ReactNative/LoginPage&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\projects\\React\\2DRender\\frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\projects\React\2DRender\backend\app" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-WS-243.26053.12" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c99cc48b-ffc2-436c-ae0d-75614d97b662" name="Changes" comment="" />
+      <created>1746635226733</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746635226733</updated>
+      <workItem from="1746635227808" duration="3404000" />
+      <workItem from="1746640461561" duration="759000" />
+      <workItem from="1746676323068" duration="1239000" />
+      <workItem from="1746680538832" duration="638000" />
+      <workItem from="1746684616393" duration="11655000" />
+      <workItem from="1746705726211" duration="9143000" />
+      <workItem from="1746796481556" duration="4307000" />
+      <workItem from="1746881736146" duration="17061000" />
+      <workItem from="1746943874436" duration="3328000" />
+      <workItem from="1746955667914" duration="1721000" />
+      <workItem from="1746966085133" duration="9270000" />
+      <workItem from="1747054069499" duration="7755000" />
+      <workItem from="1747065505933" duration="2187000" />
+      <workItem from="1747068263627" duration="14000" />
+      <workItem from="1747142309330" duration="12702000" />
+      <workItem from="1747157622088" duration="2824000" />
+      <workItem from="1747160807897" duration="2104000" />
+      <workItem from="1747231529413" duration="10000" />
+      <workItem from="1747246663544" duration="57000" />
+      <workItem from="1747315118517" duration="3155000" />
+      <workItem from="1747319609757" duration="3002000" />
+      <workItem from="1747403964540" duration="10000" />
+      <workItem from="1747502188922" duration="956000" />
+      <workItem from="1747543185357" duration="16000" />
+      <workItem from="1747568088987" duration="2623000" />
+      <workItem from="1747661921732" duration="7806000" />
+      <workItem from="1747745463815" duration="16596000" />
+      <workItem from="1747922129477" duration="10045000" />
+      <workItem from="1748006521548" duration="11209000" />
+      <workItem from="1748068006454" duration="833000" />
+      <workItem from="1748072890252" duration="9995000" />
+      <workItem from="1748095292048" duration="11368000" />
+      <workItem from="1748143257588" duration="2628000" />
+      <workItem from="1748152019006" duration="12676000" />
+      <workItem from="1748177938718" duration="4530000" />
+      <workItem from="1748188613742" duration="66000" />
+      <workItem from="1748438113974" duration="13766000" />
+      <workItem from="1748775735374" duration="7848000" />
+      <workItem from="1748871858281" duration="17000" />
+      <workItem from="1748960238905" duration="446000" />
+      <workItem from="1748961508157" duration="6779000" />
+      <workItem from="1749045496774" duration="11397000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/backend/app/models.py</url>
+          <line>1</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

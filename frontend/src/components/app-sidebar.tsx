@@ -9,11 +9,26 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import {useEffect} from "react";
 
 export function AppSidebar() {
+
+    useEffect(() => {
+        const fetchSessions = async () =>{
+            const response = await fetch("http://localhost:3000/sessions",{
+                method: "GET",
+                headers : {
+                    "Content-Type": "application/json",
+                },
+                body : JSON.stringify({
+                    user_id: localStorage.getItem("user_id"),
+                })
+            });
+        }
+    }, []);
     return (
         <Sidebar>
-            <SidebarContent className="flex flex-col justify-between h-full">
+            <SidebarContent className="flex flex-col justify-between h-full ">
                 <div>
                     <SidebarGroup>
                         <SidebarGroupLabel>Plura</SidebarGroupLabel>

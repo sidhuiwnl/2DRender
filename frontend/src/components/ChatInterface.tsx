@@ -12,7 +12,9 @@ import {usePrompt} from "../context/chat-context.tsx";
 export default function ChatInterface() {
     const { setPrompt } = usePrompt();
     const navigate = useNavigate();
-    const [value, setValue] = useState("")
+    const [value, setValue] = useState("");
+    const[isLoading, setIsLoading] = useState(false);
+
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 72,
         maxHeight: 300,
@@ -27,6 +29,26 @@ export default function ChatInterface() {
             setPrompt(value)
             adjustHeight(true)
         }
+    }
+
+    const handleSubmit = async () =>{
+        setIsLoading(true);
+        const userId = localStorage.getItem("userId")
+        const response = await fetch("http://localhost:3000/session",{
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id : userId,
+            })
+        })
+        setIsLoading(false);
+        if(response.ok){
+            navigate(`/chats`)
+            setPrompt(value)
+        }
+
     }
 
     return (
@@ -74,11 +96,7 @@ export default function ChatInterface() {
                                         "rounded-lg p-2 bg-black/5 dark:bg-white/5",
                                         "hover:bg-black/10 dark:hover:bg-white/10 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:ring-blue-500",
                                     )}
-                                    onClick={() => {
-                                        navigate(`/chats`)
-                                        setPrompt(value)
-                                    }
-                                }
+                                    onClick={handleSubmit}
                                     aria-label="Send message"
                                     disabled={!value.trim()}
                                 >
@@ -86,6 +104,7 @@ export default function ChatInterface() {
                                         className={cn(
                                             "w-4 h-4 dark:text-white transition-opacity duration-200",
                                             value.trim() ? "opacity-100" : "opacity-30",
+                                            isLoading ? "animate-spin" : ""
                                         )}
                                     />
                                 </button>
