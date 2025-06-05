@@ -5,41 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c99cc48b-ffc2-436c-ae0d-75614d97b662" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/SignInPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/EditPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/manim_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/manim_code.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/AnimationScene.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/AnimationScene.mp4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1064333444_2038545737.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1273598268_1332071004.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1516673015_3511136365.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1602442528_3609869738.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1721185647_2289113904.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1733185085_2166597644.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_1821694688_2373750003.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_2287245093_2373750003.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_2432899909_578674303.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_3394500337_4222577628.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_3394500337_82903673.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_4217992463_3278671325.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_4217992463_3712042578.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_4217992463_687603347.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/2852726489_86363224_578674303.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/partial_movie_file_list.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/temp/media/videos/manim_code/1080p60/partial_movie_files/AnimationScene/partial_movie_file_list.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatBox.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatInterface.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatInterface.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/SlideInPreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SlideInPreview.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/app-sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Home.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/Main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Main.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/chat.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vite.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,6 +107,8 @@
       <workItem from="1748960238905" duration="446000" />
       <workItem from="1748961508157" duration="6779000" />
       <workItem from="1749045496774" duration="11397000" />
+      <workItem from="1749068839065" duration="45000" />
+      <workItem from="1749132663118" duration="6988000" />
     </task>
     <servers />
   </component>

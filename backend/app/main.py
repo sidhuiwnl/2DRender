@@ -1,7 +1,7 @@
 import glob
 import subprocess
 import os
-from fastapi import FastAPI,HTTPException,Depends
+from fastapi import FastAPI,HTTPException,Depends,Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional,List
@@ -281,8 +281,8 @@ async def session(chat_session : UserSession, db : Session = Depends(get_db)):
         }
 
 @app.get("/sessions")
-async def getSessions(chat_session : UserSession, db: Session = Depends(get_db)):
-    sessions = db.query(Session).filter_by(ChatSession.user_id == chat_session.user_id)
+async def getSessions(userId : str = Query(...), db: Session = Depends(get_db)):
+    sessions = db.query(ChatSession).filter(ChatSession.user_id == userId).all()
 
     if sessions:
         return {

@@ -1,7 +1,5 @@
 
 
-import type React from "react"
-
 import { ArrowRight,Paperclip } from "lucide-react"
 import { useState } from "react"
 import {cn} from "../lib/utils.ts";
@@ -22,14 +20,14 @@ export default function ChatInterface() {
 
 
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault()
-            navigate("/chats")
-            setPrompt(value)
-            adjustHeight(true)
-        }
-    }
+    // const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    //     if (e.key === "Enter" && !e.shiftKey) {
+    //         e.preventDefault()
+    //         navigate("/chats")
+    //         setPrompt(value)
+    //         adjustHeight(true)
+    //     }
+    // }
 
     const handleSubmit = async () =>{
         setIsLoading(true);
@@ -43,9 +41,11 @@ export default function ChatInterface() {
                 user_id : userId,
             })
         })
+        const data = await response.json();
+
         setIsLoading(false);
         if(response.ok){
-            navigate(`/chats`)
+            navigate(`/chats/${data.sessionId}`)
             setPrompt(value)
         }
 
@@ -66,7 +66,7 @@ export default function ChatInterface() {
                                     "min-h-[72px]",
                                 )}
                                 ref={textareaRef}
-                                onKeyDown={handleKeyDown}
+
                                 onChange={(e) => {
                                     setValue(e.target.value)
                                     adjustHeight()

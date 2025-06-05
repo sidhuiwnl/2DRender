@@ -9,26 +9,38 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import {useEffect} from "react";
+import { useEffect, useState } from "react"
+import {useNavigate} from "react-router";
 
 export function AppSidebar() {
+    const navigate = useNavigate();
+
+    const [sessions, setSessions] = useState<{ id: string; user_id: string }[]>([])
+
+
 
     useEffect(() => {
-        const fetchSessions = async () =>{
-            const response = await fetch("http://localhost:3000/sessions",{
+        const userId = localStorage.getItem("userId")
+        const fetchSessions = async () => {
+            const response = await fetch(`http://localhost:3000/sessions?userId=${userId}`, {
                 method: "GET",
-                headers : {
+                headers: {
                     "Content-Type": "application/json",
                 },
-                body : JSON.stringify({
-                    user_id: localStorage.getItem("user_id"),
-                })
-            });
+            })
+
+            const data = await response.json()
+
+            console.log(data)
+
+            setSessions(data.sessions || [])
         }
-    }, []);
+        fetchSessions()
+    }, [])
+
     return (
         <Sidebar>
-            <SidebarContent className="flex flex-col justify-between h-full ">
+            <SidebarContent className="flex flex-col justify-between h-full">
                 <div>
                     <SidebarGroup>
                         <SidebarGroupLabel>Plura</SidebarGroupLabel>
@@ -49,7 +61,7 @@ export function AppSidebar() {
                                             <span>My Chat</span>
                                         </a>
                                     </SidebarMenuButton>
-                                    <div className="p-4">
+                                    <div className="p-4 space-y-2">
                                         <SidebarMenuItem>
                                             <SidebarMenuButton asChild>
                                                 <button className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-primary/90">
@@ -57,16 +69,33 @@ export function AppSidebar() {
                                                     <span>New Chat</span>
                                                 </button>
                                             </SidebarMenuButton>
+
                                         </SidebarMenuItem>
+                                        <h1 className="mt-5">Chats</h1>
+                                        {sessions.map((session) => (
+                                            <SidebarMenuItem key={session.id}>
+                                                <SidebarMenuButton
+                                                    onClick={() => navigate(`/chats/${session.id}`)}
+                                                    asChild
+                                                >
+                                                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg border border-muted bg-muted/20 hover:bg-muted/40 text-sm text-white transition-all duration-150 shadow-sm">
+
+                                                        <span className="truncate">
+                    {session.id.slice(0, 10)}...{session.id.slice(-4)}
+                </span>
+                                                    </button>
+                                                </SidebarMenuButton>
+                                            </SidebarMenuItem>
+                                        ))}
+
+
+
                                     </div>
                                 </SidebarMenuItem>
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
                 </div>
-
-
-
             </SidebarContent>
         </Sidebar>
     )
