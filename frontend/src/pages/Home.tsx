@@ -30,7 +30,9 @@ export default function Home() {
                 })
                 const data = await response.json();
 
-                localStorage.setItem("userId",data.id);
+                console.log(data);
+
+                localStorage.setItem("userId",data.data.id);
             }
         }
 

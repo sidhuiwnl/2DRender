@@ -45,7 +45,7 @@ export default function ChatInterface() {
 
         setIsLoading(false);
         if(response.ok){
-            navigate(`/chats/${data.sessionId}`)
+            navigate(`/chats/${data.data.sessionId}`)
             setPrompt(value)
         }
 

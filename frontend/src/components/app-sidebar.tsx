@@ -9,20 +9,33 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useEffect, useState } from "react"
+import { useEffect, useState,useRef  } from "react"
 import {useNavigate} from "react-router";
+
+
+type SessionType = {
+    id: string;
+    user_id: string;
+    name: string;
+};
+
+
 
 export function AppSidebar() {
     const navigate = useNavigate();
+    const [sessions, setSessions] = useState<SessionType[]>([])
+    const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+    const [tempName, setTempName] = useState<string>("");
 
-    const [sessions, setSessions] = useState<{ id: string; user_id: string }[]>([])
+    const inputRef = useRef<HTMLInputElement>(null);
 
 
 
     useEffect(() => {
         const userId = localStorage.getItem("userId")
+
         const fetchSessions = async () => {
-            const response = await fetch(`http://localhost:3000/sessions?userId=${userId}`, {
+            const response = await fetch(`http://localhost:3000/sessions?user_id=${userId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -31,12 +44,43 @@ export function AppSidebar() {
 
             const data = await response.json()
 
-            console.log(data)
 
-            setSessions(data.sessions || [])
+            console.log(data)
+            setSessions(data.data.sessions || [])
         }
         fetchSessions()
     }, [])
+
+    const handleDoubleClick = (sessionId : string,currentName :string) => {
+        setEditingSessionId(sessionId)
+        setTempName(currentName)
+        setTimeout(() => inputRef.current?.focus(), 0);
+    }
+
+    const handleBlur = async (sessionId : string) => {
+        setEditingSessionId(null)
+
+        try {
+            await fetch(`http://localhost:3000/session/${sessionId}`, {
+                method : "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name : tempName
+                })
+            })
+
+            setSessions((prev) =>
+                prev.map((session) => session.id === sessionId ? {
+                    ...session,
+                    name : tempName
+                } : session)
+            )
+        }catch (err) {
+            console.error("Failed to update session name", err);
+        }
+    }
 
     return (
         <Sidebar>
@@ -64,10 +108,10 @@ export function AppSidebar() {
                                     <div className="p-4 space-y-2">
                                         <SidebarMenuItem>
                                             <SidebarMenuButton asChild>
-                                                <button className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-primary/90">
-                                                    <Plus size={18} />
-                                                    <span>New Chat</span>
-                                                </button>
+                                                    <button className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-primary/90">
+                                                        <Plus size={18} />
+                                                        <span>New Chat</span>
+                                                    </button>
                                             </SidebarMenuButton>
 
                                         </SidebarMenuItem>
@@ -75,15 +119,29 @@ export function AppSidebar() {
                                         {sessions.map((session) => (
                                             <SidebarMenuItem key={session.id}>
                                                 <SidebarMenuButton
+                                                    onDoubleClick={() => handleDoubleClick(session.id,session.name)}
                                                     onClick={() => navigate(`/chats/${session.id}`)}
                                                     asChild
+                                                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer   hover:bg-muted/40 text-sm text-white transition-all duration-150 shadow-sm"
                                                 >
-                                                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg border border-muted bg-muted/20 hover:bg-muted/40 text-sm text-white transition-all duration-150 shadow-sm">
+                                                {editingSessionId === session.id ? (
+                                                    <input
+                                                        ref={inputRef}
+                                                        type="text"
+                                                        value={tempName}
+                                                        onChange={(e) => setTempName(e.target.value)}
+                                                        onBlur={() => handleBlur(session.id)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter") inputRef.current?.blur();
+                                                        }}
+                                                        className="bg-transparent border-none outline-none text-white w-full"
+                                                    />
+                                                ) : (
+                                                    <span className="truncate">
+                                                       └ {session.name}
+                                                    </span>
+                                                )}
 
-                                                        <span className="truncate">
-                    {session.id.slice(0, 10)}...{session.id.slice(-4)}
-                </span>
-                                                    </button>
                                                 </SidebarMenuButton>
                                             </SidebarMenuItem>
                                         ))}
@@ -100,3 +158,4 @@ export function AppSidebar() {
         </Sidebar>
     )
 }
+

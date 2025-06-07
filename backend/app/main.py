@@ -1,10 +1,11 @@
 import glob
 import subprocess
 import os
-from fastapi import FastAPI,HTTPException,Depends,Query
+from fastapi import FastAPI,HTTPException,Depends,Query,status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Optional,List
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, EmailStr, field_validator, UUID4
+from typing import Optional,List,Dict,Any
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -14,20 +15,34 @@ from models import Manim,SessionLocal,User,ChatSession
 import cloudinary
 import cloudinary.uploader
 from sqlalchemy.orm import Session
-
-
+import logging
+from uuid import uuid4
 
 load_dotenv()
 
-GOOGLE_KEY = os.getenv("GEMINI_API_KEY")
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-app = FastAPI()
+
+
+
+app = FastAPI(
+    title="Manim Animation API",
+    description="API for generating mathematical animations using Manim",
+    version="1.0.0"
+)
+
+
+GOOGLE_KEY = os.getenv("GEMINI_API_KEY")
+CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME")
+CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")
+CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
+
 
 cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET")
-
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET
 )
 
 
@@ -42,16 +57,38 @@ app.add_middleware(
 BASE_DIR = os.path.join(os.path.dirname(__file__),"temp")
 os.makedirs(BASE_DIR,exist_ok=True)
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 
 class PromptRequest(BaseModel):
     prompt: str
     user_id : str
     session_id : Optional[str] = None
 
+    @field_validator('prompt')
+    @classmethod
+    def prompt_must_not_be_empty(cls,v : str) -> str:
+        if not v.strip():
+            raise ValueError("Prompt cannot be Empty")
+        return v.strip()
+
+
 class RegisterUser(BaseModel):
     fullName : str
-    email : str
+    email : EmailStr
     clerkId : str
+
+    @field_validator('fullName')
+    def name_must_not_be_empty(cls,v : str) -> str:
+        if not v.strip():
+            raise ValueError("Full Name cannot be empty")
+        return v.strip()
 
 class ContentBlock(BaseModel):
     type : str
@@ -62,8 +99,17 @@ class UserSession(BaseModel):
     user_id : str
 
 
+
 class MessageContent(BaseModel):
     content: List[ContentBlock]
+
+class APIResponse(BaseModel):
+    success : bool
+    message : Optional[str] = None
+    data : Optional[Dict[str,Any]] = None
+
+class UpdateSessionName(BaseModel):
+    name : str
 
 
 def upload_to_cloudinary(video_path: str, file_name: str):
@@ -96,37 +142,46 @@ async def generate_code(prompt: str) -> list[dict]:
     6. Make sure to give manim code that uses latest manim syntax.
     7.Don’t want to use LaTeX, use Text() instead of MathTex() or Integer()
     """
+    try:
 
-    client = genai.Client(api_key=GOOGLE_KEY)
-    contents = [types.Content(role="user", parts=[types.Part(text=prompt)])]
+        client = genai.Client(api_key=GOOGLE_KEY)
+        contents = [types.Content(role="user", parts=[types.Part(text=prompt)])]
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        config=types.GenerateContentConfig(system_instruction=system_instruction),
-        contents=contents
-    )
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            config=types.GenerateContentConfig(system_instruction=system_instruction),
+            contents=contents
+        )
 
-    full_text = response.candidates[0].content.parts[0].text.strip()
+        full_text = response.candidates[0].content.parts[0].text.strip()
 
-    # Split explanation and code
-    if "```" in full_text:
-        explanation, code_block = full_text.split("```", 1)
+        # Split explanation and code
+        if "```" in full_text:
+            explanation, code_block = full_text.split("```", 1)
 
-        # Remove both opening ```python and closing ```
-        code_lines = [
-            line for line in code_block.splitlines()
-            if line.strip().lower() != "python" and line.strip() != "```"
+            # Remove both opening ```python and closing ```
+            code_lines = [
+                line for line in code_block.splitlines()
+                if line.strip().lower() != "python" and line.strip() != "```"
+            ]
+            code = "\n".join(code_lines).strip()
+
+        else:
+            explanation = full_text
+            code = ""
+
+        return [
+            {"type": "explanation", "data": explanation.strip()},
+            {"type": "code", "data": code}
         ]
-        code = "\n".join(code_lines).strip()
 
-    else:
-        explanation = full_text
-        code = ""
+    except Exception as e:
+        logger.error(f"Code generation failed:{e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate animation code"
+        )
 
-    return [
-        {"type": "explanation", "data": explanation.strip()},
-        {"type": "code", "data": code}
-    ]
 
 
 
@@ -134,21 +189,31 @@ def render_manim(file_path: str):
     cmd = ["manim", file_path, "AnimationScene", "-p"]
     try:
         response = subprocess.run(cmd, check=True, capture_output=True, text=True, cwd=os.path.dirname(file_path))
+        logger.info("Manim rendering completed successfully")
         return response
     except subprocess.CalledProcessError as e:
-        print("Manim rendering failed:", e.stderr)
+        logger.error(f"Manim rendering failed: {e.stderr}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Animation rendering failed: {e.stderr}"
+        )
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
+
+@app.get("/", response_model=APIResponse)
+async def root():
+    """Health check endpoint"""
+    return APIResponse(
+        success=True,
+        message="Manim Animation API is running",
+        data={"version": "1.0.0"}
+    )
+
 
 
 @app.post("/generate")
-async def generate(prompt_req: PromptRequest):
+async def generate_animation(prompt_req: PromptRequest):
     file_path = os.path.join(BASE_DIR, "manim_code.py")
 
     print(prompt_req.user_id)
@@ -157,20 +222,29 @@ async def generate(prompt_req: PromptRequest):
     try:
         if prompt_req.session_id:
             session_id = prompt_req.session_id
-            session = db.query(Session).filter_by(id = session_id).first()
+            session = db.query(ChatSession).filter_by(id = session_id).first()
             if not session:
-                raise ValueError("Invalid session ID provided.")
+               raise HTTPException(
+                   status_code=status.HTTP_404_NOT_FOUND,
+                   detail="Invalid session ID provided"
+               )
         else:
-            session = ChatSession(user_id=prompt_req.user_id)
-            db.add(session)
+            new_session = ChatSession(user_id=prompt_req.user_id)
+            db.add(new_session)
             db.commit()
-            db.refresh(session)
-            session_id = session.id
+            db.refresh(new_session)
+            session_id = new_session.id
 
         output = await generate_code(prompt_req.prompt)
 
         explanation = next((item["data"] for item in output if item["type"] == "explanation"), "")
         code = next((item["data"] for item in output if item["type"] == "code"), "")
+
+        if not code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Failed to generate valid Manim code"
+            )
 
         with open(file_path,"w") as f:
             f.write(code)
@@ -216,7 +290,7 @@ async def generate(prompt_req: PromptRequest):
         }
 
     except Exception as e:
-        print("Error:", e)
+        logger.error(f"Animation generation error: {e}")
         return {
             "success": False,
             "message": str(e),
@@ -228,75 +302,152 @@ async def generate(prompt_req: PromptRequest):
     finally:
         db.close()
 
-
-@app.post("/register")
-async def register(user : RegisterUser,db : Session = Depends(get_db)):
-    existing_user = db.query(User).filter(User.clerkId == user.clerkId).first()
-
-    if existing_user:
-        return {"message": "User already exists", "id": str(existing_user.id)}
-
-    new_user = User(
-        fullName=user.fullName,
-        email=user.email,
-        clerkId=user.clerkId
-    )
-
+@app.patch("/session/{session_id}",response_model=APIResponse)
+async def update_session_name(session_id : str,data : dict,db : Session = Depends(get_db)):
     try:
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
-        return {"message": "User registered successfully", "id": str(new_user.id)}
+        name = data.get("name")
+        current_session = db.query(ChatSession).filter_by(id=session_id).first()
+
+        if not current_session:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="The session is not found"
+            )
+        else:
+            current_session.name = name
+            db.commit()
+
+        return {
+            "success": True,
+            "message": "Successfully updated the name",
+        }
+    except HTTPException:
+        raise
+    except Exception as e :
+        logger.error(f"Session retrieval error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )
+
+
+
+@app.post("/register",response_model=APIResponse)
+async def register(user : RegisterUser,db : Session = Depends(get_db)):
+    try:
+            existing_user = db.query(User).filter(User.clerkId == user.clerkId).first()
+
+            if existing_user:
+                return APIResponse(
+                    success=True,
+                    message = "User Aldready Exist",
+                    data={ "id" : str(existing_user.id )}
+                )
+
+
+            new_user = User(
+                fullName=user.fullName,
+                email=user.email,
+                clerkId=user.clerkId
+            )
+
+
+            db.add(new_user)
+            db.commit()
+            db.refresh(new_user)
+            return APIResponse(
+                success=True,
+                message="User registered successfully",
+                data={"id": str(new_user.id)}
+            )
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="Email or Clerk ID already exists")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email or Clerk ID already exists"
+        )
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Internal server error")
+        logger.error(f"User registration error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )
 
 
 @app.post("/session")
 async def session(chat_session : UserSession, db : Session = Depends(get_db)):
-    existing_user = db.query(User).filter(User.id == chat_session.user_id).first()
+    try:
+        existing_user = db.query(User).filter(User.id == chat_session.user_id).first()
 
-    if existing_user:
-        new_session = ChatSession(
-            user_id = existing_user.id
+        if not existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User doesn't exist. Please authenticate."
+            )
+
+        new_session = ChatSession(user_id=existing_user.id,name=str(uuid4()))
+        db.add(new_session)
+        db.commit()
+        db.refresh(new_session)
+        return APIResponse(
+            success=True,
+            message="Session created successfully",
+            data={"sessionId": str(new_session.name)}
         )
 
-        try:
-            db.add(new_session)
-            db.commit()
-            db.refresh(new_session)
-            return  { "message" : "Session Created","sessionId" : str(new_session.id)}
-        except IntegrityError:
-            db.rollback()
-            raise HTTPException(status_code=400, detail="User Doen't Exist Please authenticate")
-        except Exception as e:
-            db.rollback()
-        raise HTTPException(status_code=500, detail="Internal server error")
-    else:
-        return {
-            "message" : "User Doen't Exist Please authenticate"
-        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Session creation error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )
 
-@app.get("/sessions")
-async def getSessions(userId : str = Query(...), db: Session = Depends(get_db)):
-    sessions = db.query(ChatSession).filter(ChatSession.user_id == userId).all()
 
-    if sessions:
-        return {
-            "message" : "Fetched Sessions",
-            "sessions" : sessions
-        }
-    else:
-        return {
-            "message" : "No Sessions Present"
-        }
+
+@app.get("/sessions",response_model=APIResponse)
+async def get_sessions(user_id : str = Query(...), db: Session = Depends(get_db)):
+
+    try:
+
+        sessions = db.query(ChatSession).filter(ChatSession.user_id == user_id).all()
+
+        if not sessions:
+            return APIResponse(
+                success=True,
+                message="No sessions found",
+                data={"sessions": []}
+            )
+        session_data = [{
+            "id" : str(session.id),
+            "user_id" : str(session.user_id),
+            "name" : str(session.name),
+            "created_at": session.created_at.isoformat() if hasattr(session, 'created_at') else None
+
+        } for session in sessions
+        ]
+        return APIResponse(
+            success=True,
+            message="Sessions fetched successfully",
+            data={"sessions": session_data}
+        )
+    except Exception as e:
+        logger.error(f"Session retrieval error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )
+
 
 
 
 if __name__ == "__main__":
+
+
+
     host = "0.0.0.0"
     port = 3000
     print(f"Server is running on http://{host}:{port}")

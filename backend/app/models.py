@@ -7,6 +7,8 @@ import uuid
 import os
 from datetime import datetime, timezone
 
+
+
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -32,7 +34,7 @@ class ChatSession(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id =  Column(UUID(as_uuid=True),ForeignKey("user.id"),nullable=False)
     user =  relationship("User",back_populates="sessions")
-
+    name = Column(Text)
     manims = relationship("Manim",back_populates="session",cascade="all, delete")
 
 class User(Base):
