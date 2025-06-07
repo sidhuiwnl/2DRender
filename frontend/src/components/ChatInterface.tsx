@@ -44,6 +44,8 @@ export default function ChatInterface() {
         const data = await response.json();
 
         setIsLoading(false);
+
+
         if(response.ok){
             navigate(`/chats/${data.data.sessionId}`)
             setPrompt(value)

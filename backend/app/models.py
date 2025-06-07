@@ -24,6 +24,7 @@ class Manim(Base):
     prompt = Column(String, nullable=True)
     code = Column(Text)
     video_url = Column(String)
+    explanation = Column(Text)
     status = Column(String, default="processing")
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 

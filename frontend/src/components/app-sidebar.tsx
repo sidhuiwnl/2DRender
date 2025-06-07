@@ -45,7 +45,7 @@ export function AppSidebar() {
             const data = await response.json()
 
 
-            console.log(data)
+
             setSessions(data.data.sessions || [])
         }
         fetchSessions()
@@ -107,11 +107,13 @@ export function AppSidebar() {
                                     </SidebarMenuButton>
                                     <div className="p-4 space-y-2">
                                         <SidebarMenuItem>
-                                            <SidebarMenuButton asChild>
-                                                    <button className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-primary/90">
+                                            <SidebarMenuButton
+                                                className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-primary/90"
+                                               >
+
                                                         <Plus size={18} />
                                                         <span>New Chat</span>
-                                                    </button>
+
                                             </SidebarMenuButton>
 
                                         </SidebarMenuItem>

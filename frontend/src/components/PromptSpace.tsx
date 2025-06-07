@@ -79,7 +79,7 @@ const ContentBlockRenderer = ({
     return null;
 };
 
-export default function PromptSpace() {
+export default function PromptSpace({ id } :  { id : string }  ) {
     const { prompt } = usePrompt();
     const [messages, setMessages] = useState<MessageType[]>([]);
     const [showPreview, setShowPreview] = useState(false);
@@ -92,6 +92,67 @@ export default function PromptSpace() {
             behavior: "smooth",
         })
     }
+
+    useEffect(() => {
+        async function getChats(){
+            const response = await fetch(`http://localhost:3000/manim-chat/${id}`,{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+
+            const data = await response.json();
+
+            const chats = data.data.chats;
+
+            const formattedMessages : MessageType[]  = []
+
+            chats.forEach((chat : any)  => {
+                formattedMessages.push({
+                    type : "user",
+                    content : [
+                        {
+                            type : "text",
+                            value : chat.prompt,
+                        }
+                    ]
+                })
+
+                const assistantContent : ContentBlock[] = []
+                if (chat.code) {
+                    assistantContent.push({
+                        type: "code",
+                        value: chat.code,
+                        language: "python",
+                    });
+                }
+
+                if (chat.video_url) {
+                    assistantContent.push({
+                        type: "link",
+                        value: chat.video_url,
+                    });
+                }
+
+                if(chat.explanation){
+                    assistantContent.push({
+                        type : "text",
+                        value : chat.explanation,
+                    })
+                }
+
+                formattedMessages.push({
+                    type: "assistant",
+                    content: assistantContent,
+                });
+            })
+            setMessages(formattedMessages);
+
+        }
+
+        getChats();
+    }, [id]);
 
     useEffect(() => {
         scrollToBottom();
@@ -199,7 +260,7 @@ export default function PromptSpace() {
 
 
                 <div className="sticky bottom-0 left-0 right-0 flex justify-center z-10 px-2 bg-background pt-2 pb-4">
-                    <ChatBox setMessages={setMessages} />
+                    <ChatBox setMessages={setMessages} sessionId={id} />
                 </div>
             </motion.div>
 

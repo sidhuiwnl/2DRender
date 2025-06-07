@@ -272,6 +272,7 @@ async def generate_animation(prompt_req: PromptRequest):
         new_manim = Manim(
             session_id = session_id,
             prompt=prompt_req.prompt,
+            explanation = explanation,
             code=code,
             video_url=public_url,
             status="done"
@@ -330,6 +331,47 @@ async def update_session_name(session_id : str,data : dict,db : Session = Depend
             detail="Internal server error"
         )
 
+
+@app.get("/manim-chat/{session_id}",response_model=APIResponse)
+async def get_manim_chats(session_id : str,db : Session = Depends(get_db)):
+
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The sessionId is not found"
+        )
+
+    try:
+        manim_chats = db.query(Manim).filter_by(session_id = session_id).all()
+
+        if not manim_chats:
+            return APIResponse(
+                success= False,
+                message = "There is not chat's found"
+            )
+        chats = [{
+            "id" : chat.id,
+            "sessionId" : chat.session_id,
+            "prompt" : chat.prompt,
+            "code" : chat.code,
+            "explanation" : chat.explanation,
+            "video_url" : chat.video_url,
+            "status" : chat.status,
+            "created_at" : chat.created_at
+
+        } for chat in manim_chats]
+        return APIResponse(
+            success=True,
+            message = "Fetched Chat's Successfully",
+            data={ "chats" : chats}
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email or Clerk ID already exists"
+        )
 
 
 @app.post("/register",response_model=APIResponse)

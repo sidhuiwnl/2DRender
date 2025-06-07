@@ -9,13 +9,15 @@ import axios from "axios";
 
 type ChatBotProps = {
     setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
+    sessionId: string;
 };
 
-export default function ChatBox({ setMessages }: ChatBotProps) {
+export default function ChatBox({ setMessages,sessionId }: ChatBotProps) {
 
 
     const [value, setValue] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
 
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 48,
@@ -31,6 +33,7 @@ export default function ChatBox({ setMessages }: ChatBotProps) {
             content: [{ type: "text", value: value.trim() }],
         };
 
+        const userId = localStorage.getItem("userId");
 
 
         setMessages((prev) => [...prev, userMessage]);
@@ -40,8 +43,8 @@ export default function ChatBox({ setMessages }: ChatBotProps) {
         try {
             const response = await axios.post("http://localhost:3000/generate",{
                 prompt : value.trim(),
-                user_id : "",
-
+                user_id : userId,
+                session_id : sessionId,
             });
 
             if(response.data.success){
