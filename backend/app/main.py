@@ -17,6 +17,7 @@ import cloudinary.uploader
 from sqlalchemy.orm import Session
 import logging
 from uuid import uuid4
+import traceback
 
 load_dotenv()
 
@@ -107,6 +108,7 @@ class APIResponse(BaseModel):
     success : bool
     message : Optional[str] = None
     data : Optional[Dict[str,Any]] = None
+
 
 class UpdateSessionName(BaseModel):
     name : str
@@ -303,6 +305,7 @@ async def generate_animation(prompt_req: PromptRequest):
     finally:
         db.close()
 
+
 @app.patch("/session/{session_id}",response_model=APIResponse)
 async def update_session_name(session_id : str,data : dict,db : Session = Depends(get_db)):
     try:
@@ -415,6 +418,28 @@ async def register(user : RegisterUser,db : Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error"
         )
+
+
+@app.get("/user/{clerkId}",response_model=APIResponse)
+async def check_user_exist(clerkId: str, db: Session = Depends(get_db)):
+    try:
+        user = db.query(User).filter(User.clerkId == clerkId).first()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        return APIResponse(
+
+            success=True,
+            message="User exists",
+        )
+    except HTTPException:
+        raise
+
+    except Exception:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
 
 
 @app.post("/session")

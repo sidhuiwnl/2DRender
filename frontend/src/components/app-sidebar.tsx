@@ -1,4 +1,4 @@
-import { Home, MessageCircle, Plus } from "lucide-react"
+import { Home, MessageCircle, Plus,Loader2 } from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
@@ -9,47 +9,26 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useEffect, useState,useRef  } from "react"
+import { useState,useRef  } from "react"
 import {useNavigate} from "react-router";
+import {useSessionsQuery,useUpdateSessionMutation} from "@/queryOptions/createSessionMutation.ts";
 
-
-type SessionType = {
-    id: string;
-    user_id: string;
-    name: string;
-};
 
 
 
 export function AppSidebar() {
     const navigate = useNavigate();
-    const [sessions, setSessions] = useState<SessionType[]>([])
     const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+    const [updatingSessionId, setUpdatingSessionId] = useState<string | null>(null);
+
     const [tempName, setTempName] = useState<string>("");
 
     const inputRef = useRef<HTMLInputElement>(null);
 
+    const userId = localStorage.getItem("userId") as string;
 
-
-    useEffect(() => {
-        const userId = localStorage.getItem("userId")
-
-        const fetchSessions = async () => {
-            const response = await fetch(`http://localhost:3000/sessions?user_id=${userId}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-
-            const data = await response.json()
-
-
-
-            setSessions(data.data.sessions || [])
-        }
-        fetchSessions()
-    }, [])
+    const { data, isLoading : fetchingSessions,  } = useSessionsQuery(userId);
+    const { mutate : updateSession} = useUpdateSessionMutation()
 
     const handleDoubleClick = (sessionId : string,currentName :string) => {
         setEditingSessionId(sessionId)
@@ -59,27 +38,13 @@ export function AppSidebar() {
 
     const handleBlur = async (sessionId : string) => {
         setEditingSessionId(null)
-
-        try {
-            await fetch(`http://localhost:3000/session/${sessionId}`, {
-                method : "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name : tempName
-                })
-            })
-
-            setSessions((prev) =>
-                prev.map((session) => session.id === sessionId ? {
-                    ...session,
-                    name : tempName
-                } : session)
-            )
-        }catch (err) {
-            console.error("Failed to update session name", err);
-        }
+        setUpdatingSessionId(sessionId)
+        updateSession({
+            sessionId,
+            tempName,
+        },{
+            onSettled : () => setUpdatingSessionId(null)
+        })
     }
 
     return (
@@ -110,7 +75,6 @@ export function AppSidebar() {
                                             <SidebarMenuButton
                                                 className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-primary/90"
                                                >
-
                                                         <Plus size={18} />
                                                         <span>New Chat</span>
 
@@ -118,38 +82,46 @@ export function AppSidebar() {
 
                                         </SidebarMenuItem>
                                         <h1 className="mt-5">Chats</h1>
-                                        {sessions.map((session) => (
-                                            <SidebarMenuItem key={session.id}>
-                                                <SidebarMenuButton
-                                                    onDoubleClick={() => handleDoubleClick(session.id,session.name)}
-                                                    onClick={() => navigate(`/chats/${session.id}`)}
-                                                    asChild
-                                                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer   hover:bg-muted/40 text-sm text-white transition-all duration-150 shadow-sm"
-                                                >
-                                                {editingSessionId === session.id ? (
-                                                    <input
-                                                        ref={inputRef}
-                                                        type="text"
-                                                        value={tempName}
-                                                        onChange={(e) => setTempName(e.target.value)}
-                                                        onBlur={() => handleBlur(session.id)}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === "Enter") inputRef.current?.blur();
-                                                        }}
-                                                        className="bg-transparent border-none outline-none text-white w-full"
-                                                    />
-                                                ) : (
-                                                    <span className="truncate">
-                                                       └ {session.name}
-                                                    </span>
-                                                )}
+                                        { fetchingSessions ? (
+                                            <Loader2  className="animate-spin" size={20} />
+                                        ) : (
+                                            <>
+                                                {data?.data.sessions.map((session) => (
+                                                    <SidebarMenuItem key={session.id}>
+                                                        <SidebarMenuButton
+                                                            onDoubleClick={() => handleDoubleClick(session.id,session.name)}
+                                                            onClick={() => navigate(`/chats/${session.id}`)}
+                                                            asChild
+                                                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer  hover:bg-neutral-300 hover:text-black  text-sm bg-white text-black transition-all duration-150 shadow-sm"
+                                                        >
+                                                            {editingSessionId === session.id ? (
+                                                                <input
+                                                                    ref={inputRef}
+                                                                    type="text"
+                                                                    value={tempName}
+                                                                    onChange={(e) => setTempName(e.target.value)}
+                                                                    onBlur={() => handleBlur(session.id)}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === "Enter") inputRef.current?.blur();
+                                                                    }}
+                                                                    className="bg-transparent border-none outline-none  w-full"
+                                                                />
+                                                            ) : (
+                                                                <span className="truncate">
+                                                                      {updatingSessionId === session.id ? (
+                                                                          <Loader2 className="animate-spin" size={20} />
+                                                                      ) : (
+                                                                          session.name
+                                                                      )}
+                                                                </span>
 
-                                                </SidebarMenuButton>
-                                            </SidebarMenuItem>
-                                        ))}
+                                                            )}
 
-
-
+                                                        </SidebarMenuButton>
+                                                    </SidebarMenuItem>
+                                                ))}
+                                            </>
+                                        )}
                                     </div>
                                 </SidebarMenuItem>
                             </SidebarMenu>

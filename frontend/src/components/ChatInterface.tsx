@@ -1,57 +1,51 @@
 
 
-import { ArrowRight,Paperclip } from "lucide-react"
-import { useState } from "react"
+import { ArrowRight,Paperclip,Loader2 } from "lucide-react"
+import {useCallback, useState} from "react"
 import {cn} from "../lib/utils.ts";
 import { useAutoResizeTextarea } from "../hooks/use-auto-resize-textarea"
-import {useNavigate} from "react-router";
 import {usePrompt} from "../context/chat-context.tsx";
+import {toast} from "sonner";
+import {useCreateSession} from "@/queryOptions/createSessionMutation.ts";
+
+<div className="min-h-screen w-full bg-white relative">
+    {/* Tri-Point Blend Background */}
+    <div
+        className="absolute inset-0 z-0"
+        style={{
+            backgroundImage: `
+        radial-gradient(circle at 0%   0%,   #ff9a8b 0%, transparent 50%),
+        radial-gradient(circle at 100% 0%,   #ffd3b5 0%, transparent 50%),
+        radial-gradient(circle at 50%  100%, #6a90f2 0%, transparent 50%)
+      `,
+            backgroundSize: "cover",
+        }}
+    />
+    {/* Your Content/Components */}
+</div>
+
 
 export default function ChatInterface() {
     const { setPrompt } = usePrompt();
-    const navigate = useNavigate();
     const [value, setValue] = useState("");
-    const[isLoading, setIsLoading] = useState(false);
+
+    const createSessionMutation = useCreateSession();
 
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 72,
         maxHeight: 300,
     })
+    const handleSubmit = useCallback(() => {
+        const userId = localStorage.getItem("userId") as string;
 
-
-
-    // const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    //     if (e.key === "Enter" && !e.shiftKey) {
-    //         e.preventDefault()
-    //         navigate("/chats")
-    //         setPrompt(value)
-    //         adjustHeight(true)
-    //     }
-    // }
-
-    const handleSubmit = async () =>{
-        setIsLoading(true);
-        const userId = localStorage.getItem("userId")
-        const response = await fetch("http://localhost:3000/session",{
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                user_id : userId,
-            })
-        })
-        const data = await response.json();
-
-        setIsLoading(false);
-
-
-        if(response.ok){
-            navigate(`/chats/${data.data.sessionId}`)
-            setPrompt(value)
+        if (!userId) {
+            toast.error("User not authenticated");
+            return;
         }
 
-    }
+        createSessionMutation.mutate(userId);
+        setPrompt(value);
+    }, [value, createSessionMutation, setPrompt]);
 
     return (
         <div className="w-4/6 py-4 ">
@@ -70,8 +64,12 @@ export default function ChatInterface() {
                                 ref={textareaRef}
 
                                 onChange={(e) => {
-                                    setValue(e.target.value)
-                                    adjustHeight()
+                                    const newValue = e.target.value;
+                                    if(newValue !== value) {
+                                        setValue(e.target.value)
+                                        adjustHeight()
+                                    }
+
                                 }}
                             />
                         </div>
@@ -102,13 +100,18 @@ export default function ChatInterface() {
                                     aria-label="Send message"
                                     disabled={!value.trim()}
                                 >
-                                    <ArrowRight
-                                        className={cn(
-                                            "w-4 h-4 dark:text-white transition-opacity duration-200",
-                                            value.trim() ? "opacity-100" : "opacity-30",
-                                            isLoading ? "animate-spin" : ""
-                                        )}
-                                    />
+                                    {createSessionMutation.isPending ?
+                                        <Loader2
+                                            className="animate-spin w-4 h-4 dark:text-white transition-opacity duration-200"
+                                        /> :
+                                        (
+                                        <ArrowRight
+                                            className={cn(
+                                                "w-4 h-4 dark:text-white transition-opacity duration-200",
+                                                value.trim() ? "opacity-100" : "opacity-30",
+                                            )}
+                                        />
+                                    )}
                                 </button>
                             </div>
                         </div>
