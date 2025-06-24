@@ -109,11 +109,15 @@ export const useCreateSession = () => {
 
     const navigate = useNavigate();
 
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: (userId: string) => createSession(userId),
         onSuccess: (data) => {
             navigate(`/chats/${data.data.sessionId}`);
+            queryClient.invalidateQueries({
+                queryKey : ["sessions"]
+            })
         },
         onError: (error: Error) => {
             toast.error(error.message);

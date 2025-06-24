@@ -453,7 +453,7 @@ async def session(chat_session : UserSession, db : Session = Depends(get_db)):
                 detail="User doesn't exist. Please authenticate."
             )
 
-        new_session = ChatSession(user_id=existing_user.id,name=str(uuid4()))
+        new_session = ChatSession(user_id=existing_user.id,name="New Chat")
         db.add(new_session)
         db.commit()
         db.refresh(new_session)

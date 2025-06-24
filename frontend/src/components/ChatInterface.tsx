@@ -8,21 +8,6 @@ import {usePrompt} from "../context/chat-context.tsx";
 import {toast} from "sonner";
 import {useCreateSession} from "@/queryOptions/createSessionMutation.ts";
 
-<div className="min-h-screen w-full bg-white relative">
-    {/* Tri-Point Blend Background */}
-    <div
-        className="absolute inset-0 z-0"
-        style={{
-            backgroundImage: `
-        radial-gradient(circle at 0%   0%,   #ff9a8b 0%, transparent 50%),
-        radial-gradient(circle at 100% 0%,   #ffd3b5 0%, transparent 50%),
-        radial-gradient(circle at 50%  100%, #6a90f2 0%, transparent 50%)
-      `,
-            backgroundSize: "cover",
-        }}
-    />
-    {/* Your Content/Components */}
-</div>
 
 
 export default function ChatInterface() {

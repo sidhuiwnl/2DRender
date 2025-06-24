@@ -1,4 +1,4 @@
-import { Home, MessageCircle, Plus,Loader2 } from "lucide-react"
+import { Home, MessageCircle, Plus,Loader2,Trash } from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
@@ -9,9 +9,9 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useState,useRef  } from "react"
+import { useState,useRef,useMemo  } from "react"
 import {useNavigate} from "react-router";
-import {useSessionsQuery,useUpdateSessionMutation} from "@/queryOptions/createSessionMutation.ts";
+import {useSessionsQuery,useUpdateSessionMutation,useCreateSession} from "@/queryOptions/createSessionMutation.ts";
 
 
 
@@ -27,8 +27,12 @@ export function AppSidebar() {
 
     const userId = localStorage.getItem("userId") as string;
 
+
+
     const { data, isLoading : fetchingSessions,  } = useSessionsQuery(userId);
     const { mutate : updateSession} = useUpdateSessionMutation()
+    const { mutate, isPending} = useCreateSession();
+
 
     const handleDoubleClick = (sessionId : string,currentName :string) => {
         setEditingSessionId(sessionId)
@@ -46,6 +50,21 @@ export function AppSidebar() {
             onSettled : () => setUpdatingSessionId(null)
         })
     }
+
+    const renderNewChatButton = useMemo(() => {
+
+        return isPending ? (
+            <>
+                <Loader2 className="animate-spin" size={18} />
+                <span>Creating...</span>
+            </>
+        ) : (
+            <>
+                <Plus size={18} />
+                <span>New Chat</span>
+            </>
+        );
+    }, [isPending]);
 
     return (
         <Sidebar>
@@ -73,11 +92,12 @@ export function AppSidebar() {
                                     <div className="p-4 space-y-2">
                                         <SidebarMenuItem>
                                             <SidebarMenuButton
-                                                className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-primary/90"
-                                               >
-                                                        <Plus size={18} />
-                                                        <span>New Chat</span>
-
+                                                onClick={() => {
+                                                    mutate(userId)
+                                                }}
+                                                className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-neutral-800 cursor-pointer"
+                                            >
+                                                {renderNewChatButton}
                                             </SidebarMenuButton>
 
                                         </SidebarMenuItem>
@@ -92,7 +112,7 @@ export function AppSidebar() {
                                                             onDoubleClick={() => handleDoubleClick(session.id,session.name)}
                                                             onClick={() => navigate(`/chats/${session.id}`)}
                                                             asChild
-                                                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer  hover:bg-neutral-300 hover:text-black  text-sm bg-white text-black transition-all duration-150 shadow-sm"
+                                                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer  hover:bg-neutral-300 hover:text-black  text-sm bg-gray-200 text-black transition-all duration-150 shadow-sm"
                                                         >
                                                             {editingSessionId === session.id ? (
                                                                 <input
@@ -107,14 +127,24 @@ export function AppSidebar() {
                                                                     className="bg-transparent border-none outline-none  w-full"
                                                                 />
                                                             ) : (
-                                                                <span className="truncate">
-                                                                      {updatingSessionId === session.id ? (
-                                                                          <Loader2 className="animate-spin" size={20} />
-                                                                      ) : (
-                                                                          session.name
-                                                                      )}
-                                                                </span>
+                                                                <div className="flex items-center justify-between w-full group">
+                                                                      <span className="truncate">
+                                                                        {updatingSessionId === session.id ? (
+                                                                            <Loader2 className="animate-spin" size={20} />
+                                                                        ) : (
+                                                                            session.name
+                                                                        )}
+                                                                      </span>
 
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                        }}
+                                                                        className="opacity-0 group-hover:opacity-100 text-black rounded-sm p-1 transform -translate-x-2 group-hover:translate-x-0 cursor-pointer transition-all duration-300 ease-in-out"
+                                                                    >
+                                                                        <Trash className="w-4 h-4  " />
+                                                                    </button>
+                                                                </div>
                                                             )}
 
                                                         </SidebarMenuButton>
