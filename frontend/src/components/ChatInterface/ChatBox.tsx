@@ -1,8 +1,8 @@
 import type React from "react";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { cn } from "../lib/utils.ts";
-import { useAutoResizeTextarea } from "../hooks/use-auto-resize-textarea";
+import { cn } from "../../lib/utils.ts";
+import { useAutoResizeTextarea } from "../../hooks/use-auto-resize-textarea.ts";
 import type { MessageType } from "./PromptSpace.tsx";
 import axios from "axios";
 

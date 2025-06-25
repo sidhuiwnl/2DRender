@@ -1,4 +1,4 @@
-import { Home, MessageCircle, Plus,Loader2,Trash } from "lucide-react"
+import { Home, MessageCircle, Plus,Loader2,Trash,AlignLeft } from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
@@ -8,20 +8,25 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar.tsx"
 import { useState,useRef,useMemo  } from "react"
 import {useNavigate} from "react-router";
 import {useSessionsQuery,useUpdateSessionMutation,useCreateSession} from "@/queryOptions/createSessionMutation.ts";
-
-
+import {SignedOut,SignInButton,SignedIn,UserButton} from "@clerk/clerk-react";
+import {useUser} from "@clerk/clerk-react";
 
 
 export function AppSidebar() {
     const navigate = useNavigate();
     const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
     const [updatingSessionId, setUpdatingSessionId] = useState<string | null>(null);
-
     const [tempName, setTempName] = useState<string>("");
+
+
+    const { user } = useUser();
+
+    const username = user?.fullName || "Profile";
+    const emailAddress = user?.emailAddresses[0].emailAddress || "example@clerk.clerk.com";
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -67,7 +72,7 @@ export function AppSidebar() {
     }, [isPending]);
 
     return (
-        <Sidebar>
+        <Sidebar className="border-none">
             <SidebarContent className="flex flex-col justify-between h-full">
                 <div>
                     <SidebarGroup>
@@ -101,7 +106,7 @@ export function AppSidebar() {
                                             </SidebarMenuButton>
 
                                         </SidebarMenuItem>
-                                        <h1 className="mt-5">Chats</h1>
+                                        <h1 className="mt-5">Prompt History</h1>
                                         { fetchingSessions ? (
                                             <Loader2  className="animate-spin" size={20} />
                                         ) : (
@@ -132,7 +137,11 @@ export function AppSidebar() {
                                                                         {updatingSessionId === session.id ? (
                                                                             <Loader2 className="animate-spin" size={20} />
                                                                         ) : (
-                                                                            session.name
+
+                                                                            <span className="flex flex-row justify-center gap-2">
+                                                                                <AlignLeft size="20"/>
+                                                                                {session.name}
+                                                                            </span>
                                                                         )}
                                                                       </span>
 
@@ -157,7 +166,22 @@ export function AppSidebar() {
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
+
                 </div>
+                <div className="p-4 flex">
+                    <SignedIn>
+                        <UserButton />
+                        <div className="flex flex-col ml-2 ">
+                            <span className="text-sm">{username}</span>
+                            <span className="text-sm text-neutral-400">{emailAddress}</span>
+                        </div>
+
+                    </SignedIn>
+                    <SignedOut>
+                        <SignInButton/>
+                    </SignedOut>
+                </div>
+
             </SidebarContent>
         </Sidebar>
     )

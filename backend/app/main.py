@@ -136,7 +136,7 @@ def upload_to_cloudinary(video_path: str, file_name: str):
 async def generate_code(prompt: str) -> list[dict]:
     system_instruction = """
     When responding to requests for Manim animations:
-    1. First provide a brief explanation of how the animation works and what it demonstrates.
+    1. First provide a detailed explanation of how the animation works and what it demonstrates.
     2. Then output the full Python Manim code starting with ```python and ending with ```.
     3. The code should use a single Scene class named AnimationScene.
     4. Do not include import statements, comments in the code.

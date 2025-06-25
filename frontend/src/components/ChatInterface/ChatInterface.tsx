@@ -2,9 +2,9 @@
 
 import { ArrowRight,Paperclip,Loader2 } from "lucide-react"
 import {useCallback, useState} from "react"
-import {cn} from "../lib/utils.ts";
-import { useAutoResizeTextarea } from "../hooks/use-auto-resize-textarea"
-import {usePrompt} from "../context/chat-context.tsx";
+import {cn} from "../../lib/utils.ts";
+import { useAutoResizeTextarea } from "../../hooks/use-auto-resize-textarea.ts"
+import {usePrompt} from "../../context/chat-context.tsx";
 import {toast} from "sonner";
 import {useCreateSession} from "@/queryOptions/createSessionMutation.ts";
 

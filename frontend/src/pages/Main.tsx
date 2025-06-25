@@ -2,7 +2,7 @@ import {BrowserRouter,Routes,Route} from "react-router";
 import Home from "@/pages/Home.tsx";
 import Chat from "@/pages/chat.tsx";
 import EditPage from "@/pages/EditPage.tsx";
-import SignIn from "@/components/SignInPage.tsx";
+import SignIn from "@/components/AuthPage/SignInPage.tsx";
 
 export default function Main(){
 

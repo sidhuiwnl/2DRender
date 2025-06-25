@@ -1,4 +1,4 @@
-import ChatInterface from "../components/ChatInterface.tsx";
+import ChatInterface from "../components/ChatInterface/ChatInterface.tsx";
 import {
     SignedOut,
     SignInButton,

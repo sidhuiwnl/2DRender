@@ -1,5 +1,5 @@
-import PromptSpace from "../components/PromptSpace.tsx";
-import { AppSidebar } from "@/components/app-sidebar.tsx";
+import PromptSpace from "../components/ChatInterface/PromptSpace.tsx";
+import { AppSidebar } from "@/components/Sidebar/app-sidebar.tsx";
 import {SidebarTrigger} from "@/components/ui/sidebar.tsx";
 import {useParams} from "react-router";
 
