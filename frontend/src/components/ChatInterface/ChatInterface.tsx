@@ -6,7 +6,7 @@ import {cn} from "../../lib/utils.ts";
 import { useAutoResizeTextarea } from "../../hooks/use-auto-resize-textarea.ts"
 import {usePrompt} from "../../context/chat-context.tsx";
 import {toast} from "sonner";
-import {useCreateSession} from "@/queryOptions/createSessionMutation.ts";
+import {useCreateSession} from "@/queryOptions/SessionMutation.ts";
 
 
 

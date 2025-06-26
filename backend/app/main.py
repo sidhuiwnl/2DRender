@@ -213,7 +213,6 @@ async def root():
     )
 
 
-
 @app.post("/generate")
 async def generate_animation(prompt_req: PromptRequest):
     file_path = os.path.join(BASE_DIR, "manim_code.py")
@@ -304,35 +303,6 @@ async def generate_animation(prompt_req: PromptRequest):
         }
     finally:
         db.close()
-
-
-@app.patch("/session/{session_id}",response_model=APIResponse)
-async def update_session_name(session_id : str,data : dict,db : Session = Depends(get_db)):
-    try:
-        name = data.get("name")
-        current_session = db.query(ChatSession).filter_by(id=session_id).first()
-
-        if not current_session:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="The session is not found"
-            )
-        else:
-            current_session.name = name
-            db.commit()
-
-        return {
-            "success": True,
-            "message": "Successfully updated the name",
-        }
-    except HTTPException:
-        raise
-    except Exception as e :
-        logger.error(f"Session retrieval error: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error"
-        )
 
 
 @app.get("/manim-chat/{session_id}",response_model=APIResponse)
@@ -474,7 +444,6 @@ async def session(chat_session : UserSession, db : Session = Depends(get_db)):
         )
 
 
-
 @app.get("/sessions",response_model=APIResponse)
 async def get_sessions(user_id : str = Query(...), db: Session = Depends(get_db)):
 
@@ -507,6 +476,64 @@ async def get_sessions(user_id : str = Query(...), db: Session = Depends(get_db)
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error"
         )
+
+@app.patch("/session/{session_id}",response_model=APIResponse)
+async def update_session_name(session_id : str,data : dict,db : Session = Depends(get_db)):
+    try:
+        name = data.get("name")
+        current_session = db.query(ChatSession).filter_by(id=session_id).first()
+
+        if not current_session:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="The session is not found"
+            )
+        else:
+            current_session.name = name
+            db.commit()
+
+        return {
+            "success": True,
+            "message": "Successfully updated the name",
+        }
+    except HTTPException:
+        raise
+    except Exception as e :
+        logger.error(f"Session retrieval error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )
+
+@app.delete("/session/{sessionId}",response_model=APIResponse)
+async def delete_session(sessionId : str,userId : str = Query(...),db: Session = Depends(get_db)):
+    try:
+
+        current_session = db.query(ChatSession).filter_by(id = sessionId,user_id=userId).first()
+
+        print(current_session)
+
+        if not current_session:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="The session is not found"
+            )
+        db.delete(current_session)
+        db.commit()
+
+        return APIResponse(
+            success=True,
+            message="Successfully deleted the session"
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Session retrieval error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )
+
 
 
 

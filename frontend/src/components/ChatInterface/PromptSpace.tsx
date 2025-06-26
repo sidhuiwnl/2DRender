@@ -7,6 +7,7 @@ import {usePrompt} from "../../context/chat-context.tsx";
 import ReactMarkdown from 'react-markdown';
 import {useUser} from "@clerk/clerk-react";
 
+
 export type ContentBlock = {
     type: "text" | "code" | "link";
     value: string;
@@ -31,6 +32,8 @@ const ContentBlockRenderer = ({
 }) => {
     const displayTime = new Date().toLocaleTimeString();
 
+
+
     if (block.type === "text") {
         return (
             <div className="mb-4 p-3 mr-36">
@@ -46,8 +49,6 @@ const ContentBlockRenderer = ({
         onSendCode(block.value);
         return null;
     }
-
-
 
     return null;
 };
@@ -80,7 +81,9 @@ export default function PromptSpace({ id } :  { id : string }  ) {
 
             const data = await response.json();
 
-            const chats = data.data.chats;
+            console.log("data",data);
+
+            const chats = data.data?.chats || [];
 
             const formattedMessages : MessageType[]  = []
 

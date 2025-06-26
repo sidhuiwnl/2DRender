@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/sidebar.tsx"
 import { useState,useRef,useMemo  } from "react"
 import {useNavigate} from "react-router";
-import {useSessionsQuery,useUpdateSessionMutation,useCreateSession} from "@/queryOptions/createSessionMutation.ts";
+import {useSessionsQuery,useUpdateSessionMutation,useCreateSession,useDeleteSession} from "@/queryOptions/SessionMutation.ts";
 import {SignedOut,SignInButton,SignedIn,UserButton} from "@clerk/clerk-react";
 import {useUser} from "@clerk/clerk-react";
+
+
 
 
 export function AppSidebar() {
@@ -37,6 +39,9 @@ export function AppSidebar() {
     const { data, isLoading : fetchingSessions,  } = useSessionsQuery(userId);
     const { mutate : updateSession} = useUpdateSessionMutation()
     const { mutate, isPending} = useCreateSession();
+    const { mutate : deleteSession } = useDeleteSession();
+
+
 
 
     const handleDoubleClick = (sessionId : string,currentName :string) => {
@@ -53,6 +58,14 @@ export function AppSidebar() {
             tempName,
         },{
             onSettled : () => setUpdatingSessionId(null)
+        })
+    }
+
+    const handleDeleteSession = (sessionId : string) => {
+        console.log("deleting session", sessionId)
+        deleteSession({
+            userId,
+            sessionId
         })
     }
 
@@ -111,7 +124,7 @@ export function AppSidebar() {
                                             <Loader2  className="animate-spin" size={20} />
                                         ) : (
                                             <>
-                                                {data?.data.sessions.map((session) => (
+                                                {data?.map((session) => (
                                                     <SidebarMenuItem key={session.id}>
                                                         <SidebarMenuButton
                                                             onDoubleClick={() => handleDoubleClick(session.id,session.name)}
@@ -148,6 +161,7 @@ export function AppSidebar() {
                                                                     <button
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
+                                                                            handleDeleteSession(session.id)
                                                                         }}
                                                                         className="opacity-0 group-hover:opacity-100 text-black rounded-sm p-1 transform -translate-x-2 group-hover:translate-x-0 cursor-pointer transition-all duration-300 ease-in-out"
                                                                     >
