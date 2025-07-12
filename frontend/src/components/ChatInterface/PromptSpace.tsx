@@ -1,16 +1,18 @@
 import ChatBox from "./ChatBox.tsx";
-import {useEffect, useState,useRef} from "react";
+import {useEffect, useState, useRef, useMemo} from "react";
 import { motion } from "framer-motion";
 import SlideInPreview from "./SlideInPreview.tsx";
 import {ChevronRight} from "lucide-react";
 import {usePrompt} from "../../context/chat-context.tsx";
 import ReactMarkdown from 'react-markdown';
 import {useUser} from "@clerk/clerk-react";
+import BouncingBalls from "@/components/ui/bouncing-ball.tsx";
+import {useGetChatQuery} from "@/queryOptions/ChatMutation.ts";
 
 
 export type ContentBlock = {
-    type: "text" | "code" | "link";
-    value: string;
+    type: "text" | "code" | "link" | "loading";
+    value: string ;
     language?: string;
 };
 
@@ -30,7 +32,11 @@ const ContentBlockRenderer = ({
     onSendCode: (code: string) => void;
 
 }) => {
-    const displayTime = new Date().toLocaleTimeString();
+    const displayTime = new Date().toLocaleTimeString([],{
+        hour : "2-digit",
+        minute : "2-digit",
+
+    });
 
 
 
@@ -50,6 +56,12 @@ const ContentBlockRenderer = ({
         return null;
     }
 
+    if (block.type === "loading") {
+        return (
+            <BouncingBalls/>
+        )
+    }
+
     return null;
 };
 
@@ -62,6 +74,11 @@ export default function PromptSpace({ id } :  { id : string }  ) {
     const messageEndRef = useRef<HTMLDivElement>(null);
     const { user } = useUser();
 
+    const { data : chats } = useGetChatQuery(id)
+
+
+    console.log(chats)
+
 
 
     const scrollToBottom = () => {
@@ -70,68 +87,49 @@ export default function PromptSpace({ id } :  { id : string }  ) {
         })
     }
 
+
+    const formattedMessages = useMemo(() => {
+       return chats?.flatMap((chat ) : MessageType[] => {
+           const useMessage : MessageType = {
+               type : "user",
+               content : [{
+                   type : "text",
+                   value : chat.prompt
+               }]
+           }
+           const assistantContent : ContentBlock[] = [];
+
+           if(chat.code){
+               assistantContent.push({
+                   type : "code",
+                   value : chat.code,
+                   language : 'python'
+               })
+           }
+           if (chat.video_url) {
+               assistantContent.push({
+                   type: "link",
+                   value: chat.video_url,
+               });
+           }
+           if (chat.explanation) {
+               assistantContent.push({
+                   type: "text",
+                   value: chat.explanation,
+               });
+           }
+           const assistantMessage : MessageType = {
+               type : "assistant",
+               content : assistantContent,
+           }
+
+           return [useMessage,assistantMessage]
+       })
+    },[chats])
+
     useEffect(() => {
-        async function getChats(){
-            const response = await fetch(`http://localhost:3000/manim-chat/${id}`,{
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            })
-
-            const data = await response.json();
-
-            console.log("data",data);
-
-            const chats = data.data?.chats || [];
-
-            const formattedMessages : MessageType[]  = []
-
-            chats.forEach((chat : any)  => {
-                formattedMessages.push({
-                    type : "user",
-                    content : [
-                        {
-                            type : "text",
-                            value : chat.prompt,
-                        }
-                    ]
-                })
-
-                const assistantContent : ContentBlock[] = []
-                if (chat.code) {
-                    assistantContent.push({
-                        type: "code",
-                        value: chat.code,
-                        language: "python",
-                    });
-                }
-
-                if (chat.video_url) {
-                    assistantContent.push({
-                        type: "link",
-                        value: chat.video_url,
-                    });
-                }
-
-                if(chat.explanation){
-                    assistantContent.push({
-                        type : "text",
-                        value : chat.explanation,
-                    })
-                }
-
-                formattedMessages.push({
-                    type: "assistant",
-                    content: assistantContent,
-                });
-            })
-            setMessages(formattedMessages);
-
-        }
-
-        getChats();
-    }, [id]);
+        setMessages(formattedMessages as MessageType[]);
+    }, [formattedMessages]);
 
     useEffect(() => {
         scrollToBottom();
@@ -188,7 +186,6 @@ export default function PromptSpace({ id } :  { id : string }  ) {
     };
 
     const closePreview = () => {
-
         setShowPreview(false);
     };
 
@@ -203,8 +200,8 @@ export default function PromptSpace({ id } :  { id : string }  ) {
 
                 <div className="flex-1 overflow-y-auto scrollbar-hide">
 
-                    <div className="mx-auto max-w-4xl w-full  py-2">
-                        {messages.map((msg, i) => {
+                    <div className="mx-auto max-w-4xl w-full  py-10">
+                        {messages && messages.map((msg, i) => {
                             const isUser = msg.type === "user";
                             const avatarUrl = isUser
                                 ? user?.imageUrl || "https://api.dicebear.com/6.x/thumbs/svg?seed=user"
@@ -219,7 +216,7 @@ export default function PromptSpace({ id } :  { id : string }  ) {
                                         transition={{ duration: 0.2 }}
                                         className="flex-1"
                                     >
-                                        <div className="text-sm text-white space-y-2">
+                                        <div className="text-sm text-white space-y-1 ">
                                             {msg.content.map((block, j) => (
                                                 <ContentBlockRenderer
                                                     key={j}
@@ -231,7 +228,7 @@ export default function PromptSpace({ id } :  { id : string }  ) {
                                             {/* Show Animation Button */}
                                             {msg.type === "assistant" &&
                                                 msg.content.some((c) => c.type === "link" && c.value.includes(".mp4")) && (
-                                                    <div className="pt-2">
+
                                                         <button
                                                             onClick={() =>
                                                                 handleShowAnimation(
@@ -243,7 +240,7 @@ export default function PromptSpace({ id } :  { id : string }  ) {
                                                             <span>Show Animation</span>
                                                             <ChevronRight size="20" />
                                                         </button>
-                                                    </div>
+
                                                 )}
                                         </div>
                                     </motion.div>

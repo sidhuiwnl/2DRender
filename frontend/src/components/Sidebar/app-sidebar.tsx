@@ -1,4 +1,4 @@
-import { Home, MessageCircle, Plus,Loader2,Trash,AlignLeft } from "lucide-react"
+import { Home, MessageCircle, Plus,Loader2,Trash } from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
@@ -14,33 +14,40 @@ import {useNavigate} from "react-router";
 import {useSessionsQuery,useUpdateSessionMutation,useCreateSession,useDeleteSession} from "@/queryOptions/SessionMutation.ts";
 import {SignedOut,SignInButton,SignedIn,UserButton} from "@clerk/clerk-react";
 import {useUser} from "@clerk/clerk-react";
-
+import {useQueryClient} from "@tanstack/react-query";
 
 
 
 export function AppSidebar() {
     const navigate = useNavigate();
     const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
-    const [updatingSessionId, setUpdatingSessionId] = useState<string | null>(null);
     const [tempName, setTempName] = useState<string>("");
-
-
     const { user } = useUser();
-
     const username = user?.fullName || "Profile";
     const emailAddress = user?.emailAddresses[0].emailAddress || "example@clerk.clerk.com";
-
     const inputRef = useRef<HTMLInputElement>(null);
-
     const userId = localStorage.getItem("userId") as string;
-
-
-
     const { data, isLoading : fetchingSessions,  } = useSessionsQuery(userId);
     const { mutate : updateSession} = useUpdateSessionMutation()
     const { mutate, isPending} = useCreateSession();
     const { mutate : deleteSession } = useDeleteSession();
 
+    const queryClient = useQueryClient();
+
+
+    const prefetchChats = (sessionId: string) => {
+        queryClient.prefetchQuery({
+            queryKey: ["chats", sessionId],
+            queryFn: async () => {
+                const response = await fetch(`http://localhost:3000/manim-chat/${sessionId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+                const data = await response.json();
+                return data.data?.chats || [];
+            },
+        });
+    };
 
 
 
@@ -52,12 +59,10 @@ export function AppSidebar() {
 
     const handleBlur = async (sessionId : string) => {
         setEditingSessionId(null)
-        setUpdatingSessionId(sessionId)
         updateSession({
             sessionId,
             tempName,
-        },{
-            onSettled : () => setUpdatingSessionId(null)
+            userId
         })
     }
 
@@ -129,6 +134,7 @@ export function AppSidebar() {
                                                         <SidebarMenuButton
                                                             onDoubleClick={() => handleDoubleClick(session.id,session.name)}
                                                             onClick={() => navigate(`/chats/${session.id}`)}
+                                                            onMouseEnter={() => prefetchChats(session.id)}
                                                             asChild
                                                             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer  hover:bg-neutral-300 hover:text-black  text-sm bg-gray-200 text-black transition-all duration-150 shadow-sm"
                                                         >
@@ -142,30 +148,24 @@ export function AppSidebar() {
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") inputRef.current?.blur();
                                                                     }}
-                                                                    className="bg-transparent border-none outline-none  w-full"
+                                                                    className="bg-transparent border-none outline-none text-white  w-full"
                                                                 />
                                                             ) : (
                                                                 <div className="flex items-center justify-between w-full group">
-                                                                      <span className="truncate">
-                                                                        {updatingSessionId === session.id ? (
-                                                                            <Loader2 className="animate-spin" size={20} />
-                                                                        ) : (
+                                                                    <span className="truncate">
+                                                                      <span className="flex flex-row justify-center gap-2">
 
-                                                                            <span className="flex flex-row justify-center gap-2">
-                                                                                <AlignLeft size="20"/>
-                                                                                {session.name}
-                                                                            </span>
-                                                                        )}
+                                                                          {session.name}
                                                                       </span>
-
+                                                                    </span>
                                                                     <button
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
-                                                                            handleDeleteSession(session.id)
+                                                                            handleDeleteSession(session.id);
                                                                         }}
                                                                         className="opacity-0 group-hover:opacity-100 text-black rounded-sm p-1 transform -translate-x-2 group-hover:translate-x-0 cursor-pointer transition-all duration-300 ease-in-out"
                                                                     >
-                                                                        <Trash className="w-4 h-4  " />
+                                                                        <Trash className="w-4 h-4" />
                                                                     </button>
                                                                 </div>
                                                             )}

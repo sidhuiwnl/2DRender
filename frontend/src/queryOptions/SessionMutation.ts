@@ -47,7 +47,9 @@ export const createSession = async (userId: string): Promise<SessionResponseData
         throw new Error("Could not create session");
     }
 
-    return response.json();
+
+
+    return await response.json();
 };
 
 export const useCreateSession = () => {
@@ -118,16 +120,31 @@ export const useUpdateSessionMutation = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ sessionId, tempName }: { sessionId: string; tempName: string }) =>
+        mutationFn: ({ sessionId, tempName}: { sessionId: string; tempName: string}) =>
             updateSession(sessionId, tempName),
 
-        onSuccess : () =>{
-            queryClient.invalidateQueries({
-                queryKey : ["sessions"]
-            })
+        onMutate : async ({ sessionId, tempName,userId }: { sessionId: string; tempName: string,userId : string } ) =>{
+
+            await queryClient.cancelQueries({ queryKey: ["sessions",userId] });
+
+            const previousSessions = queryClient.getQueryData<Session[]>(["sessions",userId]);
+
+            queryClient.setQueryData<Session[]>(["sessions",userId],(old = []) =>
+                old.map((session) =>
+                    session.id  === sessionId ? {...session, name : tempName} : session
+                )
+            )
+
+            return { previousSessions };
+
         },
+
         onError: (error) => {
             console.error("Failed to update session:", error);
+        },
+
+        onSettled: (_data, _err, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["sessions",variables.userId] });
         },
     })
 }

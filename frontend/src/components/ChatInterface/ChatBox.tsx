@@ -1,10 +1,11 @@
 import type React from "react";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { cn } from "../../lib/utils.ts";
-import { useAutoResizeTextarea } from "../../hooks/use-auto-resize-textarea.ts";
+import { cn } from "@/lib/utils.ts";
+import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea.ts";
 import type { MessageType } from "./PromptSpace.tsx";
 import {useGenerateChat} from "@/queryOptions/ChatMutation.ts";
+
 
 type ChatBotProps = {
     setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
@@ -41,7 +42,7 @@ export default function ChatBox({ setMessages,sessionId }: ChatBotProps) {
 
          const loadingAssistantMessage: MessageType = {
              type: "assistant",
-             content: [{ type: "text", value: "🎬 Generating the animation... Please wait.", }],
+             content: [{ type: "loading", value: "This is loading" }],
          };
 
 

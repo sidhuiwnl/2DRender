@@ -1,4 +1,4 @@
-import {useMutation,useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 
 export const generateManimChat = async ({
                                             userId,
@@ -73,4 +73,53 @@ export const useGenerateChat = () => {
             client.invalidateQueries({ queryKey: ["messages", vars.sessionId] });
         },
     })
+}
+
+
+
+export type Chat = {
+    id: string;
+    prompt: string;
+    code?: string;
+    video_url?: string;
+    explanation?: string;
+};
+
+
+export const useGetChatQuery = (sessionId : string) => {
+    return useQuery<Chat[]>({
+        queryKey : ["chats",sessionId],
+        queryFn : async () => {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/manim-chat/${sessionId}`,{
+                method : "GET",
+                headers :{
+                    "Content-Type": "application/json",
+                }
+            });
+
+            const data = await response.json();
+            return data.data?.chats || [];
+
+        },
+        enabled : !!sessionId,
+        staleTime: 5 * 60 * 1000,
+        gcTime : 10 * 60 * 1000,
+    })
+}
+
+export const usePrefetchChat = (sessionId: string) => {
+    const queryClient = useQueryClient();
+
+    return queryClient.prefetchQuery({
+        queryKey : ["chats",sessionId],
+        queryFn : async () => {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/manim-chat/${sessionId}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+            const data = await response.json();
+            return data.data?.chats || [];
+        }
+    })
+
 }

@@ -430,7 +430,7 @@ async def session(chat_session : UserSession, db : Session = Depends(get_db)):
         return APIResponse(
             success=True,
             message="Session created successfully",
-            data={"sessionId": str(new_session.name)}
+            data={"sessionId": str(new_session.id)}
         )
 
     except HTTPException:
