@@ -9,12 +9,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx"
-import { useState,useRef,useMemo  } from "react"
+import { useState,useRef  } from "react"
 import {useNavigate} from "react-router";
-import {useSessionsQuery,useUpdateSessionMutation,useCreateSession,useDeleteSession} from "@/queryOptions/SessionMutation.ts";
 import {SignedOut,SignInButton,SignedIn,UserButton} from "@clerk/clerk-react";
 import {useUser} from "@clerk/clerk-react";
-import {useQueryClient} from "@tanstack/react-query";
+import {useSessionManager} from "@/hooks/useSessionManager.ts";
 
 
 
@@ -27,28 +26,11 @@ export function AppSidebar() {
     const emailAddress = user?.emailAddresses[0].emailAddress || "example@clerk.clerk.com";
     const inputRef = useRef<HTMLInputElement>(null);
     const userId = localStorage.getItem("userId") as string;
-    const { data, isLoading : fetchingSessions,  } = useSessionsQuery(userId);
-    const { mutate : updateSession} = useUpdateSessionMutation()
-    const { mutate, isPending} = useCreateSession();
-    const { mutate : deleteSession } = useDeleteSession();
-
-    const queryClient = useQueryClient();
 
 
-    const prefetchChats = (sessionId: string) => {
-        queryClient.prefetchQuery({
-            queryKey: ["chats", sessionId],
-            queryFn: async () => {
-                const response = await fetch(`http://localhost:3000/manim-chat/${sessionId}`, {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" },
-                });
-                const data = await response.json();
-                return data.data?.chats || [];
-            },
-        });
-    };
 
+
+    const  { prefetchChats,handleDeleteSession,fetchingSessions,updateSession,isPending,mutate,data } = useSessionManager(userId);
 
 
     const handleDoubleClick = (sessionId : string,currentName :string) => {
@@ -66,15 +48,9 @@ export function AppSidebar() {
         })
     }
 
-    const handleDeleteSession = (sessionId : string) => {
-        console.log("deleting session", sessionId)
-        deleteSession({
-            userId,
-            sessionId
-        })
-    }
 
-    const renderNewChatButton = useMemo(() => {
+
+    const renderNewChatButton = () => {
 
         return isPending ? (
             <>
@@ -87,7 +63,7 @@ export function AppSidebar() {
                 <span>New Chat</span>
             </>
         );
-    }, [isPending]);
+    }
 
     return (
         <Sidebar className="border-none">
@@ -120,7 +96,7 @@ export function AppSidebar() {
                                                 }}
                                                 className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-neutral-800 cursor-pointer"
                                             >
-                                                {renderNewChatButton}
+                                                {renderNewChatButton()}
                                             </SidebarMenuButton>
 
                                         </SidebarMenuItem>

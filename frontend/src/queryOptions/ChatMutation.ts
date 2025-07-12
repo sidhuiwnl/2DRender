@@ -89,37 +89,18 @@ export type Chat = {
 export const useGetChatQuery = (sessionId : string) => {
     return useQuery<Chat[]>({
         queryKey : ["chats",sessionId],
-        queryFn : async () => {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/manim-chat/${sessionId}`,{
-                method : "GET",
-                headers :{
-                    "Content-Type": "application/json",
-                }
-            });
-
-            const data = await response.json();
-            return data.data?.chats || [];
-
-        },
+        queryFn : async () => fetchChats(sessionId),
         enabled : !!sessionId,
         staleTime: 5 * 60 * 1000,
         gcTime : 10 * 60 * 1000,
     })
 }
 
-export const usePrefetchChat = (sessionId: string) => {
-    const queryClient = useQueryClient();
-
-    return queryClient.prefetchQuery({
-        queryKey : ["chats",sessionId],
-        queryFn : async () => {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/manim-chat/${sessionId}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
-            const data = await response.json();
-            return data.data?.chats || [];
-        }
-    })
-
-}
+export const fetchChats = async (sessionId: string) => {
+    const response = await fetch(`http://localhost:3000/manim-chat/${sessionId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    });
+    const data = await response.json();
+    return data.data?.chats || [];
+};

@@ -2,14 +2,17 @@ import Main from "@/pages/Main.tsx";
 import {SidebarProvider} from "@/components/ui/sidebar.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
-function App() {
-    const queryClient = new QueryClient({
-        defaultOptions :{
-            queries: {
-                gcTime : 1000 * 60 * 60 * 24
-            }
+
+const queryClient = new QueryClient({
+    defaultOptions :{
+        queries: {
+            gcTime : 1000 * 60 * 60 * 24
         }
-    })
+    }
+})
+
+function App() {
+
 
     return (
         <QueryClientProvider client={queryClient}>
