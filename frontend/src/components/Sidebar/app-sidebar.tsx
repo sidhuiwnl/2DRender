@@ -1,4 +1,4 @@
-import { Home, MessageCircle, Plus,Loader2,Trash } from "lucide-react"
+import { Home, MessageCircle, Plus,Loader2 } from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
@@ -9,22 +9,18 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx"
-import { useState,useRef  } from "react"
 import {useNavigate} from "react-router";
 import {SignedOut,SignInButton,SignedIn,UserButton} from "@clerk/clerk-react";
 import {useUser} from "@clerk/clerk-react";
 import {useSessionManager} from "@/hooks/useSessionManager.ts";
-
+import {SidebarSessionItem} from "@/components/SidebarSessionItems.tsx";
 
 
 export function AppSidebar() {
     const navigate = useNavigate();
-    const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
-    const [tempName, setTempName] = useState<string>("");
     const { user } = useUser();
     const username = user?.fullName || "Profile";
     const emailAddress = user?.emailAddresses[0].emailAddress || "example@clerk.clerk.com";
-    const inputRef = useRef<HTMLInputElement>(null);
     const userId = localStorage.getItem("userId") as string;
 
 
@@ -33,20 +29,7 @@ export function AppSidebar() {
     const  { prefetchChats,handleDeleteSession,fetchingSessions,updateSession,isPending,mutate,data } = useSessionManager(userId);
 
 
-    const handleDoubleClick = (sessionId : string,currentName :string) => {
-        setEditingSessionId(sessionId)
-        setTempName(currentName)
-        setTimeout(() => inputRef.current?.focus(), 0);
-    }
 
-    const handleBlur = async (sessionId : string) => {
-        setEditingSessionId(null)
-        updateSession({
-            sessionId,
-            tempName,
-            userId
-        })
-    }
 
 
 
@@ -106,49 +89,16 @@ export function AppSidebar() {
                                         ) : (
                                             <>
                                                 {data?.map((session) => (
-                                                    <SidebarMenuItem key={session.id}>
-                                                        <SidebarMenuButton
-                                                            onDoubleClick={() => handleDoubleClick(session.id,session.name)}
-                                                            onClick={() => navigate(`/chats/${session.id}`)}
-                                                            onMouseEnter={() => prefetchChats(session.id)}
-                                                            asChild
-                                                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer  hover:bg-neutral-300 hover:text-black  text-sm bg-gray-200 text-black transition-all duration-150 shadow-sm"
-                                                        >
-                                                            {editingSessionId === session.id ? (
-                                                                <input
-                                                                    ref={inputRef}
-                                                                    type="text"
-                                                                    value={tempName}
-                                                                    onChange={(e) => setTempName(e.target.value)}
-                                                                    onBlur={() => handleBlur(session.id)}
-                                                                    onKeyDown={(e) => {
-                                                                        if (e.key === "Enter") inputRef.current?.blur();
-                                                                    }}
-                                                                    className="bg-transparent border-none outline-none text-white  w-full"
-                                                                />
-                                                            ) : (
-                                                                <div className="flex items-center justify-between w-full group">
-                                                                    <span className="truncate">
-                                                                      <span className="flex flex-row justify-center gap-2">
-
-                                                                          {session.name}
-                                                                      </span>
-                                                                    </span>
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            handleDeleteSession(session.id);
-                                                                        }}
-                                                                        className="opacity-0 group-hover:opacity-100 text-black rounded-sm p-1 transform -translate-x-2 group-hover:translate-x-0 cursor-pointer transition-all duration-300 ease-in-out"
-                                                                    >
-                                                                        <Trash className="w-4 h-4" />
-                                                                    </button>
-                                                                </div>
-                                                            )}
-
-                                                        </SidebarMenuButton>
-                                                    </SidebarMenuItem>
+                                                    <SidebarSessionItem
+                                                        key={session.id}
+                                                        session={session}
+                                                        onRename={(id, name) => updateSession({ sessionId: id, tempName: name, userId })}
+                                                        onDelete={handleDeleteSession}
+                                                        onNavigate={(id) => navigate(`/chats/${id}`)}
+                                                        onPrefetch={prefetchChats}
+                                                    />
                                                 ))}
+
                                             </>
                                         )}
                                     </div>
