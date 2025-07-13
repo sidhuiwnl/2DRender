@@ -10,41 +10,29 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx"
 import {useNavigate} from "react-router";
-import {SignedOut,SignInButton,SignedIn,UserButton} from "@clerk/clerk-react";
-import {useUser} from "@clerk/clerk-react";
 import {useSessionManager} from "@/hooks/useSessionManager.ts";
 import {SidebarSessionItem} from "@/components/SidebarSessionItems.tsx";
-
+import {UserProfile} from "@/components/UserProfile.tsx";
+import { v4 as uuidv4 } from "uuid";
 
 export function AppSidebar() {
     const navigate = useNavigate();
-    const { user } = useUser();
-    const username = user?.fullName || "Profile";
-    const emailAddress = user?.emailAddresses[0].emailAddress || "example@clerk.clerk.com";
     const userId = localStorage.getItem("userId") as string;
 
 
+    const  { prefetchChats,handleDeleteSession,fetchingSessions,updateSession,mutate,data } = useSessionManager(userId);
 
 
-    const  { prefetchChats,handleDeleteSession,fetchingSessions,updateSession,isPending,mutate,data } = useSessionManager(userId);
-
-
-
-
+    if (!userId) return null;
 
 
     const renderNewChatButton = () => {
 
-        return isPending ? (
-            <>
-                <Loader2 className="animate-spin" size={18} />
-                <span>Creating...</span>
-            </>
-        ) : (
-            <>
+        return (
+            <span className="flex items-center gap-1">
                 <Plus size={18} />
                 <span>New Chat</span>
-            </>
+            </span>
         );
     }
 
@@ -75,7 +63,8 @@ export function AppSidebar() {
                                         <SidebarMenuItem>
                                             <SidebarMenuButton
                                                 onClick={() => {
-                                                    mutate(userId)
+                                                    const sessionId = uuidv4()
+                                                    mutate({ userId,sessionId})
                                                 }}
                                                 className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md border hover:bg-neutral-800 cursor-pointer"
                                             >
@@ -108,19 +97,7 @@ export function AppSidebar() {
                     </SidebarGroup>
 
                 </div>
-                <div className="p-4 flex">
-                    <SignedIn>
-                        <UserButton />
-                        <div className="flex flex-col ml-2 ">
-                            <span className="text-sm">{username}</span>
-                            <span className="text-sm text-neutral-400">{emailAddress}</span>
-                        </div>
-
-                    </SignedIn>
-                    <SignedOut>
-                        <SignInButton/>
-                    </SignedOut>
-                </div>
+               <UserProfile/>
 
             </SidebarContent>
         </Sidebar>

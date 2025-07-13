@@ -3,7 +3,6 @@ import {useMutation, useQuery,useQueryClient} from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 
 
-
 type SessionResponseData = {
     success: boolean;
     message: string;
@@ -31,7 +30,7 @@ type Session = {
 // }
 
 
-export const createSession = async (userId: string): Promise<SessionResponseData> => {
+export const createSession = async (userId: string,sessionId : string): Promise<SessionResponseData> => {
 
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/session`, {
         method: "POST",
@@ -40,13 +39,13 @@ export const createSession = async (userId: string): Promise<SessionResponseData
         },
         body: JSON.stringify({
             user_id: userId,
+            session_id: sessionId,
         })
     });
 
     if (!response.ok) {
         throw new Error("Could not create session");
     }
-
 
 
     return await response.json();
@@ -59,15 +58,43 @@ export const useCreateSession = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (userId: string) => createSession(userId),
-        onSuccess: (data) => {
-            navigate(`/chats/${data.data.sessionId}`);
-            queryClient.invalidateQueries({
-                queryKey : ["sessions"]
+        mutationFn: ({ userId,sessionId } : { userId : string,sessionId : string}) => createSession(userId,sessionId),
+
+        onMutate : async ({ userId,sessionId }) => {
+            await queryClient.cancelQueries({
+                queryKey : ["sessions",userId],
             })
+
+            const previousSessions = queryClient.getQueryData<Session[]>(["sessions", userId]) || []
+
+            const optimisticSession : Session = {
+                id : sessionId,
+                user_id : userId,
+                name : "New Chat",
+                created_at: new Date().toISOString(),
+            }
+
+            queryClient.setQueryData<Session[]>(["sessions",userId],old => [
+               optimisticSession,
+                ...(old || [])
+            ])
+            return { previousSessions, sessionId, userId };
         },
-        onError: (error: Error) => {
+        onSuccess: (_data, { sessionId }) => {
+            navigate(`/chats/${sessionId}`);
+        },
+        onError: (error: Error,_variables,context) => {
             toast.error(error.message);
+
+            if(context?.previousSessions){
+                queryClient.setQueryData(["sessions",context.userId],context.previousSessions)
+            }
+        },
+
+        onSettled : (_data,_error,{ userId}) => {
+            queryClient.invalidateQueries({
+                queryKey : ["sessions",userId],
+            })
         }
     });
 };

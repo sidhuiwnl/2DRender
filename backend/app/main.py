@@ -98,6 +98,7 @@ class ContentBlock(BaseModel):
 
 class UserSession(BaseModel):
     user_id : str
+    session_id  : str
 
 
 
@@ -414,6 +415,8 @@ async def check_user_exist(clerkId: str, db: Session = Depends(get_db)):
 
 @app.post("/session")
 async def session(chat_session : UserSession, db : Session = Depends(get_db)):
+
+
     try:
         existing_user = db.query(User).filter(User.id == chat_session.user_id).first()
 
@@ -423,7 +426,7 @@ async def session(chat_session : UserSession, db : Session = Depends(get_db)):
                 detail="User doesn't exist. Please authenticate."
             )
 
-        new_session = ChatSession(user_id=existing_user.id,name="New Chat")
+        new_session = ChatSession(user_id=existing_user.id,name="New Chat",id = chat_session.session_id)
         db.add(new_session)
         db.commit()
         db.refresh(new_session)
