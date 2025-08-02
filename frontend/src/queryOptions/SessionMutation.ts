@@ -81,7 +81,7 @@ export const useCreateSession = () => {
             return { previousSessions, sessionId, userId };
         },
         onSuccess: (_data, { sessionId }) => {
-            navigate(`/chats/${sessionId}`);
+            navigate(`/chat/${sessionId}`);
         },
         onError: (error: Error,_variables,context) => {
             toast.error(error.message);

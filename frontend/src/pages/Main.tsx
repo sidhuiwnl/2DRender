@@ -12,7 +12,8 @@ export default function Main(){
             <Routes>
                 <Route path="/sign-in" element={<SignIn/>} />
                 <Route path="/" element={<Home/>}/>
-                <Route path="/chats/:id" element={<Chat/>}/>
+                <Route path="/chat/:id" element={<Chat/>}/>
+                <Route path="/chat" element={<Chat/>}/>
                 <Route path="/edit/:video" element={<EditPage/>}/>
             </Routes>
         </BrowserRouter>

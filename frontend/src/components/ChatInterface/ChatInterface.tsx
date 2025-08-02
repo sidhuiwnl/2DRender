@@ -2,25 +2,27 @@
 
 import { ArrowRight,Paperclip,Loader2 } from "lucide-react"
 import {useCallback, useState} from "react"
-import {cn} from "../../lib/utils.ts";
-import { useAutoResizeTextarea } from "../../hooks/use-auto-resize-textarea.ts"
+import {cn} from "@/lib/utils.ts";
+import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea.ts"
 import {usePrompt} from "../../context/chat-context.tsx";
 import {toast} from "sonner";
 import {useCreateSession} from "@/queryOptions/SessionMutation.ts";
-
+import { v4 as uuidv4 } from 'uuid';
 
 
 export default function ChatInterface() {
     const { setPrompt } = usePrompt();
     const [value, setValue] = useState("");
+    const sessionId = uuidv4();
 
     const createSessionMutation = useCreateSession();
+
 
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 72,
         maxHeight: 300,
     })
-    const handleSubmit = useCallback(() => {
+    const handleSubmit = useCallback(async () => {
         const userId = localStorage.getItem("userId") as string;
 
         if (!userId) {
@@ -28,7 +30,12 @@ export default function ChatInterface() {
             return;
         }
 
-        createSessionMutation.mutate(userId);
+        const data = {
+            sessionId,
+            userId,
+        }
+
+        createSessionMutation.mutate(data);
         setPrompt(value);
     }, [value, createSessionMutation, setPrompt]);
 

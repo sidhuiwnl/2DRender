@@ -1,104 +1,69 @@
 import type React from "react";
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState,useCallback } from "react";
 import { cn } from "@/lib/utils.ts";
 import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea.ts";
-import type { MessageType } from "./PromptSpace.tsx";
-import {useGenerateChat} from "@/queryOptions/ChatMutation.ts";
-
+import {useSendMessage} from "@/hooks/useChat.ts";
+import {v4 as uuid} from "uuid";
+import {useNavigate} from "react-router";
+import {useCreateSession} from "@/queryOptions/SessionMutation.ts";
 
 type ChatBotProps = {
-    setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
-    sessionId: string;
+    sessionId: string | undefined
 };
 
-export default function ChatBox({ setMessages,sessionId }: ChatBotProps) {
+export default function ChatBox({ sessionId }: ChatBotProps) {
 
 
     const [value, setValue] = useState<string>("");
+    const newSessionId = sessionId || uuid();
+    const navigate = useNavigate();
+    const userId = localStorage.getItem("userId") || "";
 
+    console.log(newSessionId);
 
-    const generateChatMutation = useGenerateChat()
+    const  { mutate : createSession } = useCreateSession()
 
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 48,
         maxHeight: 300,
     });
-
-     const sendMessage = async () => {
-        if (!value.trim()) return;
-
-        // Create user message with content as a single text block
-        const userMessage: MessageType = {
-            type: "user",
-            content: [{ type: "text", value: value.trim() }],
-        };
-
-        const userId = localStorage.getItem("userId");
-         if (!userId) {
-             console.error("No userId found in localStorage");
-             return;
-         }
-
-         const loadingAssistantMessage: MessageType = {
-             type: "assistant",
-             content: [{ type: "loading", value: "This is loading" }],
-         };
+    const { sendMessage,isPending} = useSendMessage({
+        sessionId : newSessionId,
+        adjustHeight
+    });
 
 
+    const handleSend = useCallback(() => {
+        const prompt = value?.trim();
+        if (!prompt ) return;
 
-        setMessages((prev) => [...prev, userMessage,loadingAssistantMessage]);
-
-         const curentValue = value.trim();
-        setValue("");
-        adjustHeight(true);
-
-        try {
-            const response = await generateChatMutation.mutateAsync({
-                userId,
-                prompt : curentValue,
-                sessionId
-            })
-
-            if (response.success && response.content) {
-                const assistantMessage: MessageType = {
-                    type: "assistant",
-                    content: response.content,
-                };
-
-                setMessages(prev => [
-                    ...prev.slice(0, -1), // remove the "generating..." message
-                    assistantMessage,
-                ]);
-            }
-
-        }catch (err) {
-            const errorMessage: MessageType = {
-                type: "assistant",
-                content: [
-                    {
-                        type: "text",
-                        value: `❌ Error: ${err instanceof Error ? err.message : String(err)}`
-                    }
-                    ],
-            };
-            setMessages((prev) => [...prev, errorMessage]);
+        if (!sessionId) {
+           createSession({
+               userId ,
+               sessionId : newSessionId
+           } ,{
+               onSuccess : () => {
+                   sendMessage(prompt)
+               }
+           })
+        }else {
+            sendMessage(prompt)
+            setValue("");
         }
 
+    }, [value, sessionId, navigate, sendMessage]);
 
-    };
-
-    const isLoading = generateChatMutation.isPending;
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            sendMessage();
+            handleSend();
         }
     };
     return (
         <div className="w-[800px] relative h-full">
-            <div className="bg-white dark:bg-neutral-900 rounded-xl flex items-end p-2 gap-2 shadow-xl border border-2">
+            <div className="bg-white dark:bg-neutral-900 rounded-xl flex items-end p-2 gap-2 shadow-xl border ">
                 <textarea
                     id="ai-input-15"
                     value={value}
@@ -113,7 +78,7 @@ export default function ChatBox({ setMessages,sessionId }: ChatBotProps) {
                         setValue(e.target.value);
                         adjustHeight();
                     }}
-                    disabled={isLoading}
+                    disabled={isPending}
                 />
 
 
@@ -122,13 +87,13 @@ export default function ChatBox({ setMessages,sessionId }: ChatBotProps) {
                     className={cn(
                         "p-2 rounded-lg bg-black/5 dark:bg-white/5",
                         "hover:bg-black/10 dark:hover:bg-white/10 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:ring-blue-500",
-                        isLoading && "opacity-50 cursor-not-allowed"
+                        isPending && "opacity-50 cursor-not-allowed"
                     )}
                     aria-label="Send message"
-                    disabled={!value.trim() || isLoading}
-                    onClick={sendMessage}
+                    disabled={!value.trim() || isPending}
+                    onClick={handleSend}
                 >
-                    {isLoading ? (
+                    {isPending ? (
                         <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
                     ) : (
                         <ArrowRight

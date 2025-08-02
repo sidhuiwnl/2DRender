@@ -1,4 +1,3 @@
-import ChatInterface from "../components/ChatInterface/ChatInterface.tsx";
 import {
     SignedOut,
     SignInButton,
@@ -6,8 +5,12 @@ import {
     UserButton
 } from "@clerk/clerk-react";
 import useSignedIn from "@/hooks/useSignedIn.ts";
+import {Button} from "@/components/ui/button.tsx";
+import {ChevronRight} from "lucide-react";
+import {useNavigate} from "react-router";
 
 export default function Home() {
+    const navigate = useNavigate();
     const auth = useSignedIn();
 
     // Show loading state while authentication is being determined
@@ -93,7 +96,15 @@ export default function Home() {
             <p className="z-10 m-5">Prompt, run, edit, and deploy 2d animation videos.</p>
 
 
-            {auth.isSignedIn && auth.backendUser && <ChatInterface />}
+            {auth.isSignedIn && auth.backendUser && (
+                <Button
+                    className="cursor-pointer"
+                    onClick={() => navigate("/chat")}
+                >
+                    Get Started
+                    <ChevronRight/>
+                </Button>
+            )}
 
 
             {!auth.isSignedIn && (

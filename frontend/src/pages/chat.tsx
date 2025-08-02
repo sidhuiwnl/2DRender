@@ -7,6 +7,7 @@ export default function Chat() {
     const { id } = useParams();
 
 
+
     return (
         <div className="flex h-screen w-full">
             <AppSidebar />

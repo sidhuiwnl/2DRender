@@ -34,24 +34,25 @@ export const useGenerateChat = () => {
     const client = useQueryClient();
 
     return useMutation({
-        mutationFn : generateManimChat,
-        onMutate : async (newMessage ) => {
+        mutationFn: generateManimChat,
+        onMutate: async (newMessage) => {
             await client.cancelQueries({
-                queryKey : ["messages",newMessage.sessionId],
-            })
+                queryKey: ["messages", newMessage.sessionId],
+            });
 
             const previousMessages = client.getQueryData(["messages", newMessage.sessionId]);
 
-            client.setQueryData(["messages",newMessage.sessionId],(old : any) => [
-                ...(old || []),{
+            client.setQueryData(["messages", newMessage.sessionId], (old: any) => [
+                ...(old || []),
+                {
                     id: `temp-${Date.now()}`,
-                    content: newMessage.prompt,
+                    prompt: newMessage.prompt,
                     role: "user",
                     pending: true,
-                }
-            ])
+                },
+            ]);
 
-            return { previousMessages }
+            return { previousMessages };
         },
         onError: (_err, _vars, context) => {
             if (context?.previousMessages) {
@@ -59,12 +60,14 @@ export const useGenerateChat = () => {
             }
         },
         onSuccess: (data, vars) => {
-            // Append the AI response to message list (if data contains it)
             client.setQueryData(["messages", vars.sessionId], (old: any) => [
                 ...(old || []),
                 {
                     id: data.id,
-                    content: data.content,
+                    prompt: data.prompt, // or `content`, depending on what the backend returns
+                    code: data.code,
+                    video_url: data.video_url,
+                    explanation: data.explanation,
                     role: "assistant",
                 },
             ]);
@@ -72,8 +75,8 @@ export const useGenerateChat = () => {
         onSettled: (_data, _err, vars) => {
             client.invalidateQueries({ queryKey: ["messages", vars.sessionId] });
         },
-    })
-}
+    });
+};
 
 
 
@@ -88,10 +91,10 @@ export type Chat = {
 
 export const useGetChatQuery = (sessionId : string) => {
     return useQuery<Chat[]>({
-        queryKey : ["chats",sessionId],
+        queryKey : ["messages",sessionId],
         queryFn : async () => fetchChats(sessionId),
         enabled : !!sessionId,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 60 * 1000,
         gcTime : 10 * 60 * 1000,
     })
 }

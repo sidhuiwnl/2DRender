@@ -83,7 +83,7 @@ export function AppSidebar() {
                                                         session={session}
                                                         onRename={(id, name) => updateSession({ sessionId: id, tempName: name, userId })}
                                                         onDelete={handleDeleteSession}
-                                                        onNavigate={(id) => navigate(`/chats/${id}`)}
+                                                        onNavigate={(id) => navigate(`/chat/${id}`)}
                                                         onPrefetch={prefetchChats}
                                                     />
                                                 ))}
