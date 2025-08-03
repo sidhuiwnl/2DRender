@@ -2,17 +2,20 @@ import type React from "react";
 import { ArrowRight } from "lucide-react";
 import { useState,useCallback } from "react";
 import { cn } from "@/lib/utils.ts";
-import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea.ts";
-import {useSendMessage} from "@/hooks/useChat.ts";
 import {v4 as uuid} from "uuid";
 import {useNavigate} from "react-router";
 import {useCreateSession} from "@/queryOptions/SessionMutation.ts";
 
 type ChatBotProps = {
-    sessionId: string | undefined
+    sessionId: string | undefined;
+    sendMessage: (prompt: string) => void;
+    isPending : boolean;
+
+    adjustHeight: () => void;
+    textareaRef: React.RefObject<HTMLTextAreaElement> | null;
 };
 
-export default function ChatBox({ sessionId }: ChatBotProps) {
+export default function ChatBox({ sessionId,sendMessage,isPending,textareaRef,adjustHeight }: ChatBotProps) {
 
 
     const [value, setValue] = useState<string>("");
@@ -20,18 +23,11 @@ export default function ChatBox({ sessionId }: ChatBotProps) {
     const navigate = useNavigate();
     const userId = localStorage.getItem("userId") || "";
 
-    console.log(newSessionId);
+
 
     const  { mutate : createSession } = useCreateSession()
 
-    const { textareaRef, adjustHeight } = useAutoResizeTextarea({
-        minHeight: 48,
-        maxHeight: 300,
-    });
-    const { sendMessage,isPending} = useSendMessage({
-        sessionId : newSessionId,
-        adjustHeight
-    });
+
 
 
     const handleSend = useCallback(() => {

@@ -1,4 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import type { Chat } from "@/types/chat.ts"
 
 export const generateManimChat = async ({
                                             userId,
@@ -59,19 +60,7 @@ export const useGenerateChat = () => {
                 client.setQueryData(["messages", _vars.sessionId], context.previousMessages);
             }
         },
-        onSuccess: (data, vars) => {
-            client.setQueryData(["messages", vars.sessionId], (old: any) => [
-                ...(old || []),
-                {
-                    id: data.id,
-                    prompt: data.prompt, // or `content`, depending on what the backend returns
-                    code: data.code,
-                    video_url: data.video_url,
-                    explanation: data.explanation,
-                    role: "assistant",
-                },
-            ]);
-        },
+
         onSettled: (_data, _err, vars) => {
             client.invalidateQueries({ queryKey: ["messages", vars.sessionId] });
         },
@@ -79,14 +68,6 @@ export const useGenerateChat = () => {
 };
 
 
-
-export type Chat = {
-    id: string;
-    prompt: string;
-    code?: string;
-    video_url?: string;
-    explanation?: string;
-};
 
 
 export const useGetChatQuery = (sessionId : string) => {

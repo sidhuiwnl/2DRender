@@ -1,14 +1,14 @@
 import ChatBox from "./ChatBox.tsx";
-import { useState, useRef} from "react";
+import {useState, useRef, type RefObject} from "react";
 import { motion } from "framer-motion";
 import SlideInPreview from "./SlideInPreview.tsx";
 
 import {useUser} from "@clerk/clerk-react";
-
+import {useSendMessage} from "@/hooks/useChat.ts";
 import type { MessageType } from "@/types/chat.ts";
 import MessageItem from "@/components/ChatInterface/MessageItem.tsx";
 import {useChatMessages} from "@/hooks/useChatMessages.tsx";
-
+import {useAutoResizeTextarea} from "@/hooks/use-auto-resize-textarea.ts";
 
 export default function PromptSpace({ id } :  { id : string }  ) {
     const { user } = useUser();
@@ -17,13 +17,21 @@ export default function PromptSpace({ id } :  { id : string }  ) {
     const messageEndRef = useRef<HTMLDivElement>(null);
 
 
+     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
+        minHeight: 48,
+        maxHeight: 300,
+    });
+
+    const { sendMessage,isPending } = useSendMessage({
+        sessionId : id,
+        adjustHeight
+    })
+
     const {
         formattedMessages,
         latestCode,
         setLatestCode,
-    } = useChatMessages(id);
-
-
+    } = useChatMessages(id,isPending);
 
 
 
@@ -71,7 +79,13 @@ export default function PromptSpace({ id } :  { id : string }  ) {
 
 
                 <div className="mx-auto max-w-4xl w-full px-4 pt-2 pb-4">
-                    <ChatBox  sessionId={id} />
+                    <ChatBox
+                        sessionId={id}
+                        sendMessage={sendMessage}
+                        isPending={isPending}
+                        adjustHeight={adjustHeight}
+                        textareaRef={textareaRef as RefObject<HTMLTextAreaElement> }
+                    />
                 </div>
             </motion.div>
 

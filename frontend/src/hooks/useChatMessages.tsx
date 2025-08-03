@@ -2,15 +2,19 @@ import { useState, useMemo } from "react";
 import { useGetChatQuery } from "@/queryOptions/ChatMutation";
 import type { MessageType, ContentBlock } from "@/types/chat.ts";
 
-export function useChatMessages(id: string) {
+export function useChatMessages(id: string, isPending : boolean) {
     const [latestCode, setLatestCode] = useState("");
 
-    const { data: chats = [], isLoading: isChatsLoading } = useGetChatQuery(id);
+    const { data: chats = [], isLoading: isChatsLoading} = useGetChatQuery(id);
+
+
 
     const formattedMessages = useMemo(() => {
         const messages: MessageType[] = [];
 
-        chats.forEach((chat, index) => {
+
+
+        chats.forEach((chat) => {
 
             messages.push({
                 type: "user",
@@ -46,29 +50,28 @@ export function useChatMessages(id: string) {
                 });
             }
 
-            const isLast = index === chats.length - 1;
-            const hasAssistantReply = assistantContent.length > 0;
-
-            if (hasAssistantReply) {
+            if (assistantContent.length > 0) {
                 messages.push({
                     type: "assistant",
                     content: assistantContent,
                 });
-            } else if (isLast) {
-                messages.push({
-                    type: "assistant",
-                    content: [
-                        {
-                            type: "loading",
-                            value: "Generating response...",
-                        },
-                    ],
-                });
             }
         });
 
+        if (isChatsLoading || isPending) {
+            messages.push({
+                type: "assistant",
+                content: [
+                    {
+                        type: "loading",
+                        value: "Generating response...",
+                    },
+                ],
+            });
+        }
+
         return messages;
-    }, [chats]);
+    }, [chats, isChatsLoading]);
 
     return {
         formattedMessages,
