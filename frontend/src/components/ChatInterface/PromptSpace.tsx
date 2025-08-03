@@ -25,6 +25,8 @@ export default function PromptSpace({ id } :  { id : string }  ) {
 
 
 
+
+
     const handleShowAnimation = (link: string) => {
         setVideoLink(link);
         setShowPreview(true);

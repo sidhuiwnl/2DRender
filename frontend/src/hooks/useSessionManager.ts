@@ -26,7 +26,7 @@ export const useSessionManager = (userId : string) => {
     },[queryClient]);
 
     const handleDeleteSession = useCallback((sessionId : string) => {
-        console.log("deleting session", sessionId)
+
         deleteSession({
             userId,
             sessionId

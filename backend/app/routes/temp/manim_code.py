@@ -2,9 +2,6 @@ from manim import *
 
 class AnimationScene(Scene):
     def construct(self):
-        circle = Circle()
         triangle = Triangle()
-
-        self.play(Create(circle))
-        self.play(Transform(circle, triangle))
+        self.play(Create(triangle))
         self.wait(1)

@@ -7,7 +7,7 @@ export default function BouncingBalls() {
             {[0, 1, 2].map((i) => (
                 <motion.div
                     key={i}
-                    className="w-2 h-2 rounded-full bg-muted-foreground"
+                    className="w-2 h-1 rounded-full bg-muted-foreground"
                     animate={{
                         y: [0, -8, 0],
                     }}

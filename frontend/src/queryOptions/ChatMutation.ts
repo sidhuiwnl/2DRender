@@ -92,9 +92,9 @@ export type Chat = {
 export const useGetChatQuery = (sessionId : string) => {
     return useQuery<Chat[]>({
         queryKey : ["messages",sessionId],
-        queryFn : async () => fetchChats(sessionId),
+        queryFn :  () => fetchChats(sessionId),
         enabled : !!sessionId,
-        staleTime: 60 * 1000,
+        staleTime: 5 * 60 * 1000,
         gcTime : 10 * 60 * 1000,
     })
 }
